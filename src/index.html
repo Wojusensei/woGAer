@@ -1,39 +1,1218 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="stylesheet" href="styles.css" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tauri App</title>
-    <script type="module" src="/main.js" defer></script>
-  </head>
-
-  <body>
-    <main class="container">
-      <h1>Welcome to Tauri</h1>
-
-      <div class="row">
-        <a href="https://tauri.app" target="_blank">
-          <img src="/assets/tauri.svg" class="logo tauri" alt="Tauri logo" />
-        </a>
-        <a
-          href="https://developer.mozilla.org/en-US/docs/Web/JavaScript"
-          target="_blank"
-        >
-          <img
-            src="/assets/javascript.svg"
-            class="logo vanilla"
-            alt="JavaScript logo"
-          />
-        </a>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>woGAer</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+    }
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      margin: 0;
+      transition: background 0.6s ease, color 0.6s ease;
+      background: radial-gradient(ellipse at 30% 20%, #1e2338, #0a0c14);
+      color: #fff;
+      font-family: -apple-system, "Helvetica Neue", "Segoe UI", sans-serif;
+    }
+    body.light {
+      background: radial-gradient(ellipse at 30% 20%, #e6ecf5, #c0c8d8);
+      color: #111;
+    }
+    .glass {
+      position: relative;
+      width: 100%;
+      max-width: 920px;
+      padding: 52px 44px 44px 44px;
+      border-radius: 60px;
+      background: rgba(255, 255, 255, 0.035);
+      backdrop-filter: blur(28px) saturate(1.6);
+      -webkit-backdrop-filter: blur(28px) saturate(1.6);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: 0 40px 120px rgba(0, 0, 0, 0.7), inset 0 0 0 1px rgba(255, 255, 255, 0.03), inset 0 0 80px rgba(120, 180, 255, 0.02);
+      overflow: hidden;
+      transition: background 0.6s, backdrop-filter 0.6s, border-color 0.6s, box-shadow 0.6s;
+    }
+    body.light .glass {
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(32px) saturate(1.8);
+      -webkit-backdrop-filter: blur(32px) saturate(1.8);
+      border-color: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 40px 120px rgba(0, 0, 0, 0.15), inset 0 0 0 1px rgba(255, 255, 255, 0.6), inset 0 0 80px rgba(200, 220, 255, 0.2);
+    }
+    .glass::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 60px;
+      background: radial-gradient(ellipse at 10% 20%, rgba(255, 255, 255, 0.12), transparent 50%), radial-gradient(ellipse at 90% 80%, rgba(180, 200, 255, 0.08), transparent 40%), radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.02), transparent 70%);
+      pointer-events: none;
+      z-index: 1;
+      transition: opacity 0.6s;
+    }
+    body.light .glass::before {
+      background: radial-gradient(ellipse at 10% 20%, rgba(255, 255, 255, 0.4), transparent 50%), radial-gradient(ellipse at 90% 80%, rgba(180, 200, 255, 0.2), transparent 40%), radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.05), transparent 70%);
+    }
+    .glass::after {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 63px;
+      padding: 3px;
+      background: conic-gradient(from 0deg, rgba(180, 210, 255, 0.15), rgba(120, 160, 255, 0.04), rgba(200, 170, 255, 0.12), rgba(180, 210, 255, 0.15));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask-composite: exclude;
+      pointer-events: none;
+      animation: flowBorder 12s linear infinite;
+      z-index: 0;
+      transition: opacity 0.6s;
+    }
+    body.light .glass::after {
+      background: conic-gradient(from 0deg, rgba(60, 100, 180, 0.2), rgba(100, 140, 200, 0.08), rgba(80, 60, 160, 0.15), rgba(60, 100, 180, 0.2));
+    }
+    @keyframes flowBorder {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .content {
+      position: relative;
+      z-index: 2;
+    }
+    .title {
+      font-size: 40px;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #f2f6ff 10%, #b8d0ff 80%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 4px;
+      transition: background 0.6s;
+    }
+    body.light .title {
+      background: linear-gradient(135deg, #1a2a4a 10%, #3a5a8a 80%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .sub {
+      font-size: 15px;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.3);
+      letter-spacing: 0.6px;
+      margin-bottom: 36px;
+      transition: color 0.6s;
+    }
+    body.light .sub {
+      color: rgba(0, 0, 0, 0.4);
+    }
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .btn {
+      position: relative;
+      z-index: 2;
+      display: inline-block;
+      padding: 14px 38px;
+      border: none;
+      border-radius: 100px;
+      font-size: 15px;
+      font-weight: 500;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      cursor: pointer;
+      transition: background 0.3s ease, box-shadow 0.35s ease, color 0.6s, border-color 0.6s, transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+      will-change: transform;
+      letter-spacing: 0.2px;
+      overflow: hidden;
+      transform: perspective(600px) rotateX(0deg) rotateY(0deg) scale(1);
+    }
+    body.light .btn {
+      color: #1a1a2e;
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 12px 48px rgba(80, 140, 255, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+    body.light .btn:hover {
+      background: rgba(255, 255, 255, 0.45);
+      box-shadow: 0 12px 48px rgba(60, 100, 200, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    }
+    .btn:active {
+      transition-duration: 0.08s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+    }
+    .btn-primary {
+      background: rgba(100, 160, 255, 0.12);
+      border-color: rgba(160, 200, 255, 0.08);
+    }
+    body.light .btn-primary {
+      background: rgba(60, 120, 220, 0.15);
+      border-color: rgba(60, 120, 220, 0.2);
+    }
+    .btn-primary:hover {
+      background: rgba(100, 160, 255, 0.18);
+      border-color: rgba(160, 200, 255, 0.15);
+    }
+    body.light .btn-primary:hover {
+      background: rgba(60, 120, 220, 0.25);
+      border-color: rgba(60, 120, 220, 0.3);
+    }
+    .btn .btn-glass {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5;
+      border-radius: inherit;
+      overflow: hidden;
+    }
+    .btn .btn-text {
+      position: relative;
+      z-index: 6;
+      display: inline-block;
+    }
+    .drop-zone {
+      position: relative;
+      z-index: 2;
+      padding: 44px 20px;
+      border: 2px dashed rgba(255, 255, 255, 0.06);
+      border-radius: 36px;
+      background: rgba(255, 255, 255, 0.01);
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+      text-align: center;
+      color: rgba(255, 255, 255, 0.25);
+      font-size: 14px;
+      transition: background 0.3s, border-color 0.3s, color 0.6s;
+      cursor: default;
+    }
+    body.light .drop-zone {
+      color: rgba(0, 0, 0, 0.3);
+      border-color: rgba(0, 0, 0, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .drop-zone.dragover {
+      background: rgba(255, 255, 255, 0.03);
+      border-color: rgba(160, 200, 255, 0.15);
+    }
+    body.light .drop-zone.dragover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(60, 120, 220, 0.3);
+    }
+    .drop-zone strong {
+      color: rgba(255, 255, 255, 0.4);
+      font-weight: 500;
+    }
+    body.light .drop-zone strong {
+      color: rgba(0, 0, 0, 0.5);
+    }
+    .paused .glass::after {
+      animation-play-state: paused;
+    }
+    #pyramid-host {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      border-radius: 60px;
+      overflow: hidden;
+      transition: opacity 0.6s;
+    }
+    body.light #pyramid-host {
+      opacity: 0.6;
+    }
+    .theme-toggle {
+      position: absolute;
+      top: 20px;
+      right: 24px;
+      z-index: 10;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s, border-color 0.3s;
+      color: #fff;
+      user-select: none;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+    .theme-toggle:hover {
+      transform: scale(1.08);
+      background: rgba(255, 255, 255, 0.12);
+    }
+    body.light .theme-toggle {
+      background: rgba(255, 255, 255, 0.4);
+      border-color: rgba(255, 255, 255, 0.5);
+      color: #1a1a2e;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    }
+    body.light .theme-toggle:hover {
+      background: rgba(255, 255, 255, 0.6);
+    }
+    @media (max-width: 600px) {
+      .glass { padding: 32px 20px; border-radius: 36px; }
+      .title { font-size: 28px; }
+      .btn { padding: 12px 24px; font-size: 13px; }
+      .btn-group { gap: 8px; }
+      .theme-toggle { top: 12px; right: 14px; width: 32px; height: 32px; font-size: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="glass" id="glass">
+    <div id="pyramid-host"></div>
+    <div class="theme-toggle" id="themeToggle">☀</div>
+    <div class="content">
+      <div class="title">woGAer</div>
+      <div class="sub">GitHub Actions · 液态构建工坊</div>
+      <div class="btn-group">
+        <button class="btn btn-primary" id="btnPick">
+          <span class="btn-text">选择项目</span>
+          <span class="btn-glass"></span>
+        </button>
+        <button class="btn" id="btnSettings">
+          <span class="btn-text">设置</span>
+          <span class="btn-glass"></span>
+        </button>
+        <button class="btn" id="btnHistory">
+          <span class="btn-text">历史</span>
+          <span class="btn-glass"></span>
+        </button>
       </div>
-      <p>Click on the Tauri logo to learn more about the framework</p>
+      <div class="drop-zone" id="dropZone">
+        <strong>拖拽项目文件夹至此</strong><br />
+        或点击上方「选择项目」浏览
+      </div>
+    </div>
+  </div>
 
-      <form class="row" id="greet-form">
-        <input id="greet-input" placeholder="Enter a name..." />
-        <button type="submit">Greet</button>
-      </form>
-      <p id="greet-msg"></p>
-    </main>
-  </body>
+  <script>
+    (function() {
+      'use strict';
+
+      // ===== liquid-diamond.js (背景) =====
+      (function() {
+        if (window.attachLiquidPyramid) return;
+
+        var glassEl = document.getElementById('glass');
+        var rect = glassEl.getBoundingClientRect();
+        var BASE_W = Math.min(rect.width, 920);
+        var BASE_H = Math.min(rect.height, 600);
+
+        var VIEWPORT_SCALE = Math.min(BASE_W / 220, BASE_H / 220) * 1.7;
+        var CAMERA = [0, 0.08, 4.2];
+        var BACKGROUND_Z = -5.5;
+        var IOR = 1.18;
+        var MAX_DISTANCE = 12;
+        var SURFACE_OFFSET = 0.008;
+        var MIN_BACKGROUND_Z_COMPONENT = 0.08;
+        var MAX_UV_OFFSET = 2;
+        var MAX_EFFECTIVE_UV_OFFSET = 0.32;
+        var MAX_INTERNAL_BOUNCES = 8;
+        var EDGE_BULGE_PX = 20;
+        var EDGE_BULGE_STRENGTH = 0.04;
+        var CANVAS_DPI = 1.25;
+        var DRAG_ELASTIC = 0.16;
+        var VELOCITY_DAMPING = 0.94;
+        var BOUND_SPRING = 0.014;
+        var BOUND_DAMPING = 0.82;
+        var THETA_PER_PX = 0.0125;
+        var PHI_PER_PX = 0.01;
+        var PHI_MIN = -1.35;
+        var PHI_MAX = 1.35;
+
+        function clamp(v, mn, mx) { return Math.max(mn, Math.min(mx, v)); }
+        function texture(x, y) { return [x, y]; }
+        function add3(a, b) { return [a[0] + b[0], a[1] + b[1], a[2] + b[2]]; }
+        function sub3(a, b) { return [a[0] - b[0], a[1] - b[1], a[2] - b[2]]; }
+        function mul3(a, s) { return [a[0] * s, a[1] * s, a[2] * s]; }
+        function dot3(a, b) { return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]; }
+        function cross3(a, b) { return [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]]; }
+        function length3(v) { return Math.hypot(v[0], v[1], v[2]); }
+        function normalize3(v) { var l = length3(v); if (!l) return [0,0,0]; return [v[0]/l, v[1]/l, v[2]/l]; }
+        function softClampSigned(val, limit) { if (Math.abs(val) <= limit) return val; return limit * Math.tanh(val / limit); }
+        function stabilizeBackgroundDirection(d, minZ) { if (d[2] <= -minZ) return d; return normalize3([d[0], d[1], -minZ]); }
+
+        function buildDisplacementTrace(uv, origin, dir, entry, exit) {
+          var stableDir = stabilizeBackgroundDirection(dir, MIN_BACKGROUND_Z_COMPONENT);
+          var hit = traceToPlane(origin, stableDir, BACKGROUND_Z);
+          if (!hit) return { displacedUv: { x: uv.x, y: uv.y } };
+          var duv = screenPointToUv(hit);
+          var ox = duv.x - uv.x, oy = duv.y - uv.y;
+          ox = clamp(ox, -MAX_UV_OFFSET, MAX_UV_OFFSET);
+          oy = clamp(oy, -MAX_UV_OFFSET, MAX_UV_OFFSET);
+          var strength = clamp(0.9 + length3(sub3(exit || entry, entry)) * 0.14, 0.85, 1.25);
+          return {
+            displacedUv: {
+              x: uv.x + softClampSigned(ox * strength, MAX_EFFECTIVE_UV_OFFSET),
+              y: uv.y + softClampSigned(oy * strength, MAX_EFFECTIVE_UV_OFFSET)
+            }
+          };
+        }
+
+        function rotatePointWithTransform(p, t) {
+          var yx = p[0] * t.thetaCos + p[2] * t.thetaSin;
+          var yz = -p[0] * t.thetaSin + p[2] * t.thetaCos;
+          return [ yx, p[1] * t.phiCos - yz * t.phiSin, p[1] * t.phiSin + yz * t.phiCos ];
+        }
+        function inverseRotatePointWithTransform(p, t) {
+          var xx = p[0];
+          var xy = p[1] * t.phiCos + p[2] * t.phiSin;
+          var xz = -p[1] * t.phiSin + p[2] * t.phiCos;
+          return [ xx * t.thetaCos - xz * t.thetaSin, xy, xx * t.thetaSin + xz * t.thetaCos ];
+        }
+
+        function createPlane(a, b, c, interior) {
+          var n = normalize3(cross3(sub3(b, a), sub3(c, a)));
+          if (dot3(sub3(interior, a), n) > 0) n = mul3(n, -1);
+          return { point: a, normal: n };
+        }
+        function scaleVertices(v, s) {
+          return { apex: mul3(v.apex, s), base: v.base.map(function(p) { return mul3(p, s); }) };
+        }
+
+        var BASE_PYRAMID = { apex: [0,1.18,0], base: [[-1.04,-0.92,-1.04],[1.04,-0.92,-1.04],[1.04,-0.92,1.04],[-1.04,-0.92,1.04]] };
+        var SHAPE_SCALE = 0.9;
+        var PYRAMID_VERTICES = scaleVertices(BASE_PYRAMID, SHAPE_SCALE);
+        var PYRAMID_INTERIOR = mul3([0,-0.3,0], SHAPE_SCALE);
+        var PYRAMID_PLANES = [
+          createPlane(PYRAMID_VERTICES.apex, PYRAMID_VERTICES.base[0], PYRAMID_VERTICES.base[1], PYRAMID_INTERIOR),
+          createPlane(PYRAMID_VERTICES.apex, PYRAMID_VERTICES.base[1], PYRAMID_VERTICES.base[2], PYRAMID_INTERIOR),
+          createPlane(PYRAMID_VERTICES.apex, PYRAMID_VERTICES.base[2], PYRAMID_VERTICES.base[3], PYRAMID_INTERIOR),
+          createPlane(PYRAMID_VERTICES.apex, PYRAMID_VERTICES.base[3], PYRAMID_VERTICES.base[0], PYRAMID_INTERIOR),
+          createPlane(PYRAMID_VERTICES.base[0], PYRAMID_VERTICES.base[3], PYRAMID_VERTICES.base[2], PYRAMID_INTERIOR)
+        ];
+        var PYRAMID_FACES = [
+          { vertices: [PYRAMID_VERTICES.apex, PYRAMID_VERTICES.base[0], PYRAMID_VERTICES.base[1]], normal: PYRAMID_PLANES[0].normal },
+          { vertices: [PYRAMID_VERTICES.apex, PYRAMID_VERTICES.base[1], PYRAMID_VERTICES.base[2]], normal: PYRAMID_PLANES[1].normal },
+          { vertices: [PYRAMID_VERTICES.apex, PYRAMID_VERTICES.base[2], PYRAMID_VERTICES.base[3]], normal: PYRAMID_PLANES[2].normal },
+          { vertices: [PYRAMID_VERTICES.apex, PYRAMID_VERTICES.base[3], PYRAMID_VERTICES.base[0]], normal: PYRAMID_PLANES[3].normal },
+          { vertices: [PYRAMID_VERTICES.base[0], PYRAMID_VERTICES.base[1], PYRAMID_VERTICES.base[2]], normal: PYRAMID_PLANES[4].normal },
+          { vertices: [PYRAMID_VERTICES.base[0], PYRAMID_VERTICES.base[2], PYRAMID_VERTICES.base[3]], normal: PYRAMID_PLANES[4].normal }
+        ];
+
+        function intersectRayTriangle(origin, dir, a, b, c, normal) {
+          var e1 = sub3(b, a), e2 = sub3(c, a);
+          var pvec = cross3(dir, e2);
+          var det = dot3(e1, pvec);
+          if (Math.abs(det) < 1e-6) return null;
+          var invDet = 1 / det;
+          var tvec = sub3(origin, a);
+          var u = dot3(tvec, pvec) * invDet;
+          if (u < 0 || u > 1) return null;
+          var qvec = cross3(tvec, e1);
+          var v = dot3(dir, qvec) * invDet;
+          if (v < 0 || u + v > 1) return null;
+          var t = dot3(e2, qvec) * invDet;
+          if (t <= SURFACE_OFFSET || t > MAX_DISTANCE) return null;
+          return { t: t, point: add3(origin, mul3(dir, t)), normal: normal };
+        }
+
+        function intersectCrystalFaces(origin, dir, transform) {
+          var localOrigin = inverseRotatePointWithTransform(origin, transform);
+          var localDir = inverseRotatePointWithTransform(dir, transform);
+          var best = null;
+          for (var i = 0; i < PYRAMID_FACES.length; i++) {
+            var face = PYRAMID_FACES[i];
+            var hit = intersectRayTriangle(localOrigin, localDir, face.vertices[0], face.vertices[1], face.vertices[2], face.normal);
+            if (!hit) continue;
+            if (!best || hit.t < best.t) {
+              best = {
+                t: hit.t,
+                point: rotatePointWithTransform(hit.point, transform),
+                normal: normalize3(rotatePointWithTransform(hit.normal, transform))
+              };
+            }
+          }
+          return best;
+        }
+
+        function refractVector(incident, normal, ratio) {
+          var oriented = dot3(incident, normal) < 0 ? normal : mul3(normal, -1);
+          var cosTheta = dot3(oriented, incident);
+          var k = 1 - ratio * ratio * (1 - cosTheta * cosTheta);
+          if (k < 0) return null;
+          return normalize3(sub3(mul3(incident, ratio), mul3(oriented, ratio * cosTheta + Math.sqrt(k))));
+        }
+        function reflectVector(incident, normal) {
+          var oriented = dot3(incident, normal) < 0 ? normal : mul3(normal, -1);
+          return normalize3(sub3(incident, mul3(oriented, 2 * dot3(incident, oriented))));
+        }
+        function traceToPlane(origin, dir, planeZ) {
+          if (Math.abs(dir[2]) < 1e-5) return null;
+          var t = (planeZ - origin[2]) / dir[2];
+          if (t <= 0) return null;
+          return add3(origin, mul3(dir, t));
+        }
+        function uvToScreenPoint(uv) { return [ (uv.x - 0.5) * 2 * VIEWPORT_SCALE, (0.5 - uv.y) * 2 * VIEWPORT_SCALE, 0 ]; }
+        function screenPointToUv(p) { return { x: p[0] / (2 * VIEWPORT_SCALE) + 0.5, y: 0.5 - p[1] / (2 * VIEWPORT_SCALE) }; }
+        function projectPoint(p) { var depth = CAMERA[2] - p[2]; var factor = CAMERA[2] / depth; return [p[0] * factor, p[1] * factor]; }
+
+        function comparePoints(a, b) { if (a.x !== b.x) return a.x - b.x; return a.y - b.y; }
+        function cross2(o, a, b) { return (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x); }
+        function length2(x, y) { return Math.hypot(x, y); }
+        function centroid2(pts) { var cx=0, cy=0; for (var i=0;i<pts.length;i++){ cx+=pts[i].x; cy+=pts[i].y; } return {x:cx/pts.length, y:cy/pts.length}; }
+        function bounds2(pts) { var mnx=Infinity, mny=Infinity, mxx=-Infinity, mxy=-Infinity; for(var i=0;i<pts.length;i++){ var p=pts[i]; if(p.x<mnx) mnx=p.x; if(p.x>mxx) mxx=p.x; if(p.y<mny) mny=p.y; if(p.y>mxy) mxy=p.y; } return {minX:mnx,minY:mny,maxX:mxx,maxY:mxy,width:mxx-mnx,height:mxy-mny}; }
+        function selectBloomAnchors(pts) { var top=pts[0], ll=pts[0], lr=pts[0]; for(var i=1;i<pts.length;i++){ var p=pts[i]; if(p.y<top.y) top=p; if(p.x+p.y<ll.x+ll.y) ll=p; if(p.x-p.y>lr.x-lr.y) lr=p; } return {top:top, lowerLeft:ll, lowerRight:lr}; }
+        function buildHullEdges(hull) { var edges=[]; for(var i=0;i<hull.length;i++){ var a=hull[i], b=hull[(i+1)%hull.length]; var abx=b.x-a.x, aby=b.y-a.y; edges.push({a:a, abx:abx, aby:aby, ab2:abx*abx+aby*aby}); } return edges; }
+        function pointEdgeDistance(p, edge) { if(!edge.ab2) return length2(p.x-edge.a.x, p.y-edge.a.y); var apx=p.x-edge.a.x, apy=p.y-edge.a.y; var t=clamp((apx*edge.abx+apy*edge.aby)/edge.ab2,0,1); var cx=edge.a.x+edge.abx*t, cy=edge.a.y+edge.aby*t; return length2(p.x-cx, p.y-cy); }
+        function smoothStep(a, b, t) { var x=clamp((t-a)/(b-a),0,1); return x*x*(3-2*x); }
+        function convexHull(pts) {
+          var sorted = pts.slice().sort(comparePoints);
+          if (sorted.length <= 1) return sorted;
+          var lower = [];
+          for (var i=0;i<sorted.length;i++) { var p=sorted[i]; while(lower.length>=2 && cross2(lower[lower.length-2], lower[lower.length-1], p)<=0) lower.pop(); lower.push(p); }
+          var upper = [];
+          for (var i=sorted.length-1;i>=0;i--) { var p=sorted[i]; while(upper.length>=2 && cross2(upper[upper.length-2], upper[upper.length-1], p)<=0) upper.pop(); upper.push(p); }
+          lower.pop(); upper.pop(); return lower.concat(upper);
+        }
+
+        function createProjectedHull(transform) {
+          var projected = [PYRAMID_VERTICES.apex].concat(PYRAMID_VERTICES.base).map(function(v) {
+            var r = rotatePointWithTransform(v, transform);
+            var pr = projectPoint(r);
+            return { x: (pr[0] / VIEWPORT_SCALE) * (BASE_W/2) + BASE_W/2, y: BASE_H/2 - (pr[1] / VIEWPORT_SCALE) * (BASE_H/2) };
+          });
+          return convexHull(projected);
+        }
+        function createProjectedFaces(transform) {
+          return PYRAMID_FACES.map(function(face) {
+            var wv = face.vertices.map(function(v) { return rotatePointWithTransform(v, transform); });
+            var pts = wv.map(function(v) { var pr = projectPoint(v); return { x: (pr[0]/VIEWPORT_SCALE)*(BASE_W/2)+BASE_W/2, y: BASE_H/2-(pr[1]/VIEWPORT_SCALE)*(BASE_H/2) }; });
+            var centroid = mul3(add3(add3(wv[0], wv[1]), wv[2]), 1/3);
+            var rn = normalize3(rotatePointWithTransform(face.normal, transform));
+            var vd = normalize3(sub3(CAMERA, centroid));
+            var facing = Math.abs(dot3(rn, vd));
+            return { points: pts, strokeOpacity: 0.09 + facing * 0.14, fillOpacity: 0.012 + facing * 0.028 };
+          });
+        }
+
+        function createPyramidContext(theta, phi) {
+          var transform = {
+            theta: theta, phi: phi,
+            thetaCos: Math.cos(theta), thetaSin: Math.sin(theta),
+            phiCos: Math.cos(phi), phiSin: Math.sin(phi)
+          };
+          var hull = createProjectedHull(transform);
+          var projectedFaces = createProjectedFaces(transform);
+          var hullCenter = centroid2(hull);
+          var hullBounds = bounds2(hull);
+          var bloomAnchors = selectBloomAnchors(hull);
+          var hullEdges = buildHullEdges(hull);
+          return {
+            theta: theta, phi: phi,
+            thetaCos: transform.thetaCos, thetaSin: transform.thetaSin,
+            phiCos: transform.phiCos, phiSin: transform.phiSin,
+            hull: hull, projectedFaces: projectedFaces, hullCenter: hullCenter,
+            hullBounds: hullBounds, bloomAnchors: bloomAnchors, hullEdges: hullEdges,
+            clipPath: 'polygon(' + hull.map(function(p){ return p.x.toFixed(2)+'px '+p.y.toFixed(2)+'px'; }).join(', ') + ')'
+          };
+        }
+
+        function tracePyramidRay(uv, context) {
+          var screenPoint = uvToScreenPoint(uv);
+          var rayDirection = normalize3(sub3(screenPoint, CAMERA));
+          var firstHit = intersectCrystalFaces(CAMERA, rayDirection, context);
+          if (!firstHit) return null;
+          var entryPoint = firstHit.point;
+
+          var insideDir = refractVector(rayDirection, firstHit.normal, 1 / IOR);
+          if (!insideDir) {
+            return buildDisplacementTrace(uv, add3(entryPoint, mul3(rayDirection, SURFACE_OFFSET)), reflectVector(rayDirection, firstHit.normal), entryPoint);
+          }
+
+          var insideOrigin = add3(entryPoint, mul3(insideDir, SURFACE_OFFSET));
+          var currentDir = insideDir;
+          var exitPoint = null;
+          var outsideDir = null;
+
+          for (var bounce = 0; bounce < MAX_INTERNAL_BOUNCES; bounce++) {
+            var insideHit = intersectCrystalFaces(insideOrigin, currentDir, context);
+            if (!insideHit) {
+              return buildDisplacementTrace(uv, insideOrigin, currentDir, entryPoint);
+            }
+            exitPoint = insideHit.point;
+            outsideDir = refractVector(currentDir, insideHit.normal, IOR);
+            if (outsideDir) break;
+            currentDir = reflectVector(currentDir, insideHit.normal);
+            insideOrigin = add3(exitPoint, mul3(currentDir, SURFACE_OFFSET));
+          }
+
+          if (!exitPoint || !outsideDir) {
+            return buildDisplacementTrace(uv, insideOrigin, currentDir, entryPoint);
+          }
+
+          return buildDisplacementTrace(uv, add3(exitPoint, mul3(outsideDir, SURFACE_OFFSET)), outsideDir, entryPoint, exitPoint);
+        }
+
+        function applyEdgeBulge(trace, uv, context) {
+          var pixelPoint = { x: uv.x * BASE_W, y: uv.y * BASE_H };
+          var edgeDist = Infinity;
+          for (var i=0; i<context.hullEdges.length; i++) {
+            edgeDist = Math.min(edgeDist, pointEdgeDistance(pixelPoint, context.hullEdges[i]));
+          }
+          var edgeWeight = 1 - smoothStep(0, EDGE_BULGE_PX, edgeDist);
+          if (edgeWeight <= 0) return trace;
+          var centerUv = { x: context.hullCenter.x / BASE_W, y: context.hullCenter.y / BASE_H };
+          return {
+            displacedUv: {
+              x: trace.displacedUv.x + (centerUv.x - uv.x) * edgeWeight * EDGE_BULGE_STRENGTH,
+              y: trace.displacedUv.y + (centerUv.y - uv.y) * edgeWeight * EDGE_BULGE_STRENGTH
+            }
+          };
+        }
+
+        function createShader(width, height, options) {
+          var id = 'liquid-pyramid-' + Math.random().toString(36).slice(2);
+          var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+          var defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+          var filter = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
+          var feImage = document.createElementNS('http://www.w3.org/2000/svg', 'feImage');
+          var feDisplacementMap = document.createElementNS('http://www.w3.org/2000/svg', 'feDisplacementMap');
+
+          svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+          svg.setAttribute('width', '0');
+          svg.setAttribute('height', '0');
+          svg.style.display = 'none';
+
+          filter.setAttribute('id', id + '-filter');
+          filter.setAttribute('filterUnits', 'userSpaceOnUse');
+          filter.setAttribute('color-interpolation-filters', 'sRGB');
+          filter.setAttribute('x', '0');
+          filter.setAttribute('y', '0');
+          filter.setAttribute('width', String(width));
+          filter.setAttribute('height', String(height));
+
+          feImage.setAttribute('result', 'map');
+          feImage.setAttribute('width', String(width));
+          feImage.setAttribute('height', String(height));
+
+          feDisplacementMap.setAttribute('in', 'SourceGraphic');
+          feDisplacementMap.setAttribute('in2', 'map');
+          feDisplacementMap.setAttribute('xChannelSelector', 'R');
+          feDisplacementMap.setAttribute('yChannelSelector', 'G');
+
+          filter.appendChild(feImage);
+          filter.appendChild(feDisplacementMap);
+          defs.appendChild(filter);
+          svg.appendChild(defs);
+
+          var root = document.createElement('div');
+          root.style.position = 'relative';
+          root.style.width = width + 'px';
+          root.style.height = height + 'px';
+          root.style.overflow = 'visible';
+
+          var bloom = document.createElement('div');
+          bloom.style.position = 'absolute';
+          bloom.style.inset = '0';
+          bloom.style.pointerEvents = 'none';
+          root.appendChild(bloom);
+
+          var rim = document.createElement('div');
+          rim.style.position = 'absolute';
+          rim.style.inset = '0';
+          rim.style.pointerEvents = 'none';
+          root.appendChild(rim);
+
+          var edgeSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+          edgeSvg.setAttribute('width', String(width));
+          edgeSvg.setAttribute('height', String(height));
+          edgeSvg.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
+          edgeSvg.style.position = 'absolute';
+          edgeSvg.style.inset = '0';
+          edgeSvg.style.overflow = 'visible';
+          edgeSvg.style.pointerEvents = 'none';
+          root.appendChild(edgeSvg);
+
+          var shell = document.createElement('div');
+          shell.style.position = 'absolute';
+          shell.style.top = '0';
+          shell.style.left = '0';
+          shell.style.width = width + 'px';
+          shell.style.height = height + 'px';
+          shell.style.overflow = 'visible';
+          root.appendChild(shell);
+
+          var canvas = document.createElement('canvas');
+          canvas.width = Math.round(width * CANVAS_DPI);
+          canvas.height = Math.round(height * CANVAS_DPI);
+          canvas.style.position = 'absolute';
+          canvas.style.left = '10px';
+          canvas.style.bottom = '10px';
+          canvas.style.width = width + 'px';
+          canvas.style.height = height + 'px';
+          canvas.style.display = options.debug ? 'inline-block' : 'none';
+          root.appendChild(canvas);
+
+          var debugLabel = document.createElement('div');
+          debugLabel.style.position = 'absolute';
+          debugLabel.style.left = '10px';
+          debugLabel.style.bottom = height + 20 + 'px';
+          debugLabel.style.display = options.debug ? 'block' : 'none';
+          debugLabel.style.color = 'white';
+          debugLabel.style.fontSize = '12px';
+          debugLabel.style.textShadow = '0 1px 4px rgba(0,0,0,0.6)';
+          root.appendChild(debugLabel);
+
+          var context2d = canvas.getContext('2d');
+          var fragment = null;
+          var raf = 0;
+          var rawValues = null;
+          var imageData = null;
+
+          function render() {
+            raf = 0;
+            if (!fragment) return;
+            var w = canvas.width, h = canvas.height;
+            if (!imageData || imageData.width !== w || imageData.height !== h) {
+              imageData = new ImageData(w, h);
+            }
+            if (!rawValues || rawValues.length !== w * h * 2) {
+              rawValues = new Float32Array(w * h * 2);
+            }
+            var data = imageData.data;
+            var maxScale = 0;
+            var valueIndex = 0;
+            for (var i = 0; i < data.length; i += 4) {
+              var x = (i / 4) % w;
+              var y = ~~(i / 4 / w);
+              var pos = fragment({ x: x / w, y: y / h });
+              var dx = pos[0] * w - x;
+              var dy = pos[1] * h - y;
+              if (Math.abs(dx) > maxScale) maxScale = Math.abs(dx);
+              if (Math.abs(dy) > maxScale) maxScale = Math.abs(dy);
+              rawValues[valueIndex++] = dx;
+              rawValues[valueIndex++] = dy;
+            }
+            maxScale = Math.max(maxScale, 1);
+            var idx = 0;
+            for (var j = 0; j < data.length; j += 4) {
+              var r = rawValues[idx++] / (maxScale * 2) + 0.5;
+              var g = rawValues[idx++] / (maxScale * 2) + 0.5;
+              data[j] = r * 256;
+              data[j+1] = g * 256;
+              data[j+2] = 0;
+              data[j+3] = 255;
+            }
+            context2d.putImageData(imageData, 0, 0);
+            feImage.setAttribute('href', canvas.toDataURL());
+            feDisplacementMap.setAttribute('scale', String((maxScale * 2) / CANVAS_DPI));
+            debugLabel.textContent = 'Displacement Map (scale = ' + maxScale.toFixed(2) + ')';
+          }
+
+          function scheduleRender() {
+            if (!raf) raf = requestAnimationFrame(render);
+          }
+
+          return {
+            element: root,
+            svg: svg,
+            bloom: bloom,
+            rim: rim,
+            edgeSvg: edgeSvg,
+            shell: shell,
+            debugLabel: debugLabel,
+            setFragment: function(fn) { fragment = fn; scheduleRender(); },
+            setStyle: function(style) {
+              shell.style.backdropFilter = 'url(#' + id + '-filter) contrast(1.08) brightness(1.2) saturate(1.08)';
+              shell.style.webkitBackdropFilter = shell.style.backdropFilter;
+              shell.style.width = width + 'px';
+              shell.style.height = height + 'px';
+              for (var key in style) { shell.style[key] = style[key]; }
+            },
+            setBloomStyle: function(style) {
+              bloom.style.width = width + 'px';
+              bloom.style.height = height + 'px';
+              for (var key in style) { bloom.style[key] = style[key]; }
+            },
+            setRimStyle: function(style) {
+              rim.style.width = width + 'px';
+              rim.style.height = height + 'px';
+              for (var key in style) { rim.style[key] = style[key]; }
+            },
+            setFaceOverlay: function(faces) {
+              edgeSvg.replaceChildren();
+              for (var i=0; i<faces.length; i++) {
+                var face = faces[i];
+                var polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                polygon.setAttribute('points', face.points.map(function(p){ return p.x.toFixed(2)+','+p.y.toFixed(2); }).join(' '));
+                polygon.setAttribute('fill', 'rgba(188, 232, 247, ' + face.fillOpacity.toFixed(3) + ')');
+                polygon.setAttribute('stroke', 'rgba(126, 176, 198, ' + face.strokeOpacity.toFixed(3) + ')');
+                polygon.setAttribute('stroke-width', '1');
+                polygon.setAttribute('stroke-linejoin', 'round');
+                polygon.setAttribute('vector-effect', 'non-scaling-stroke');
+                edgeSvg.appendChild(polygon);
+              }
+            },
+            mount: function(parent) {
+              parent.appendChild(svg);
+              parent.appendChild(root);
+            },
+            destroy: function() {
+              if (raf) cancelAnimationFrame(raf);
+              svg.remove();
+              root.remove();
+            }
+          };
+        }
+
+        function attachLiquidPyramid(options) {
+          var opts = Object.assign({
+            parent: document.body,
+            debug: false,
+            width: BASE_W,
+            height: BASE_H,
+          }, options || {});
+
+          var parent = opts.parent;
+          var mount = document.createElement('div');
+          mount.style.position = 'absolute';
+          mount.style.inset = '0';
+          mount.style.pointerEvents = 'none';
+          mount.style.zIndex = '0';
+          mount.style.borderRadius = '60px';
+          mount.style.overflow = 'hidden';
+          parent.appendChild(mount);
+
+          var interactionLayer = document.createElement('div');
+          interactionLayer.style.position = 'absolute';
+          interactionLayer.style.inset = '0';
+          interactionLayer.style.pointerEvents = 'none';
+          mount.appendChild(interactionLayer);
+
+          var shader = createShader(opts.width, opts.height, { debug: opts.debug });
+          var host = document.createElement('div');
+          host.style.position = 'absolute';
+          host.style.left = '50%';
+          host.style.top = '50%';
+          host.style.width = opts.width + 'px';
+          host.style.height = opts.height + 'px';
+          host.style.pointerEvents = 'none';
+          host.style.cursor = 'default';
+          host.style.touchAction = 'none';
+          interactionLayer.appendChild(host);
+          shader.mount(host);
+
+          var x = 0, y = 0, vx = 0, vy = 0;
+          var theta = 0.64, phi = -0.42;
+          var animFrame = 0;
+
+          function updateTransform() {
+            host.style.transform = 'translate(-50%, -50%) translate(' + x.toFixed(2) + 'px, ' + y.toFixed(2) + 'px)';
+            theta = 0.64 + x * THETA_PER_PX;
+            phi = clamp(-0.42 - y * PHI_PER_PX, PHI_MIN, PHI_MAX);
+            var context = createPyramidContext(theta, phi);
+            var centerX = (context.hullCenter.x / opts.width) * 100;
+            var centerY = (context.hullCenter.y / opts.height) * 100;
+            var topX = (context.bloomAnchors.top.x / opts.width) * 100;
+            var topY = (context.bloomAnchors.top.y / opts.height) * 100;
+            var leftX = (context.bloomAnchors.lowerLeft.x / opts.width) * 100;
+            var leftY = (context.bloomAnchors.lowerLeft.y / opts.height) * 100;
+            var rightX = (context.bloomAnchors.lowerRight.x / opts.width) * 100;
+            var rightY = (context.bloomAnchors.lowerRight.y / opts.height) * 100;
+            var bloomScaleX = Math.max((context.hullBounds.width / opts.width) * 100, 68);
+            var bloomScaleY = Math.max((context.hullBounds.height / opts.height) * 100, 78);
+
+            shader.setBloomStyle({
+              clipPath: context.clipPath,
+              opacity: '1',
+              transform: 'scale(1.03)',
+              transformOrigin: centerX + '% ' + centerY + '%',
+              filter: 'blur(30px) saturate(1.3) brightness(1.22)',
+              background:
+                'radial-gradient(' + bloomScaleX * 0.2 + '% ' + bloomScaleY * 0.24 + '% at ' + topX + '% ' + topY + '%, rgba(255, 255, 255, 0.98), rgba(186, 244, 255, 0.68) 34%, rgba(108, 224, 255, 0.2) 62%, rgba(108, 224, 255, 0) 100%), ' +
+                'radial-gradient(' + bloomScaleX * 0.18 + '% ' + bloomScaleY * 0.2 + '% at ' + leftX + '% ' + leftY + '%, rgba(214, 247, 255, 0.58), rgba(110, 221, 255, 0.24) 48%, rgba(110, 221, 255, 0) 100%), ' +
+                'radial-gradient(' + bloomScaleX * 0.16 + '% ' + bloomScaleY * 0.18 + '% at ' + rightX + '% ' + rightY + '%, rgba(208, 244, 255, 0.34), rgba(110, 221, 255, 0.14) 50%, rgba(110, 221, 255, 0) 100%), ' +
+                'radial-gradient(' + bloomScaleX * 0.44 + '% ' + bloomScaleY * 0.32 + '% at ' + centerX + '% ' + Math.max(centerY - 8, 12) + '%, rgba(160, 236, 255, 0.22), rgba(160, 236, 255, 0.08) 54%, rgba(160, 236, 255, 0) 100%)'
+            });
+            shader.setRimStyle({
+              clipPath: context.clipPath,
+              opacity: '0.45',
+              background: 'linear-gradient(145deg, rgba(255, 255, 255, 0.72), rgba(205, 246, 255, 0.18) 42%, rgba(255, 255, 255, 0.04) 78%, rgba(255, 255, 255, 0.24))',
+              filter: 'drop-shadow(0 0 6px rgba(170, 240, 255, 0.45)) drop-shadow(0 0 14px rgba(122, 225, 255, 0.18))'
+            });
+            shader.setFaceOverlay(context.projectedFaces);
+            shader.setStyle({
+              clipPath: context.clipPath,
+              background: 'linear-gradient(140deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03) 38%, rgba(255, 255, 255, 0.1) 68%, rgba(255, 255, 255, 0.18)), linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.05))'
+            });
+            shader.setFragment(function(uv) {
+              var trace = tracePyramidRay(uv, context);
+              if (!trace) return texture(uv.x, uv.y);
+              var bulged = applyEdgeBulge(trace, uv, context);
+              return texture(bulged.displacedUv.x, bulged.displacedUv.y);
+            });
+          }
+
+          function tick() {
+            animFrame = 0;
+            updateTransform();
+          }
+          function scheduleTick() { if (!animFrame) animFrame = requestAnimationFrame(tick); }
+          scheduleTick();
+
+          window.addEventListener('resize', function() {});
+
+          return {
+            element: mount,
+            destroy: function() {
+              if (animFrame) cancelAnimationFrame(animFrame);
+              shader.destroy();
+              mount.remove();
+            }
+          };
+        }
+
+        window.attachLiquidPyramid = attachLiquidPyramid;
+
+        var pyramid = attachLiquidPyramid({
+          parent: document.getElementById('pyramid-host'),
+          width: BASE_W,
+          height: BASE_H,
+          debug: false
+        });
+        window.pyramidInstance = pyramid;
+      })();
+
+
+      // ===== liquid-glass.js (按钮级) =====
+      (function() {
+        function smoothStep(a, b, t) {
+          t = Math.max(0, Math.min(1, (t - a) / (b - a)));
+          return t * t * (3 - 2 * t);
+        }
+        function length(x, y) { return Math.hypot(x, y); }
+        function roundedRectSDF(x, y, w, h, r) {
+          var qx = Math.abs(x) - w + r;
+          var qy = Math.abs(y) - h + r;
+          return Math.min(Math.max(qx, qy), 0) + length(Math.max(qx, 0), Math.max(qy, 0)) - r;
+        }
+        function texture(x, y) { return { type: 't', x: x, y: y }; }
+        function generateId() { return 'btn-glass-' + Math.random().toString(36).substr(2, 9); }
+
+        var ButtonGlass = function(options) {
+          options = options || {};
+          this.width = options.width || 100;
+          this.height = options.height || 40;
+          this.container = options.container || document.body;
+          this.fragment = options.fragment || function(uv, mouse) {
+            var ix = uv.x - 0.5;
+            var iy = uv.y - 0.5;
+            var dist = roundedRectSDF(ix, iy, 0.45, 0.25, 0.6);
+            var disp = smoothStep(0.8, 0, dist - 0.15);
+            var scaled = smoothStep(0, 1, disp);
+            var strength = 0.35;
+            var mx = mouse.x - 0.5;
+            var my = mouse.y - 0.5;
+            var influence = 1 - smoothStep(0.1, 0.4, Math.hypot(mx, my));
+            var effective = scaled * strength * (0.5 + 0.5 * influence);
+            return texture(ix * effective * 1.2 + 0.5, iy * effective * 1.2 + 0.5);
+          };
+          this.canvasDPI = 1;
+          this.id = generateId();
+          this.mouse = { x: 0.5, y: 0.5 };
+          this.mouseUsed = false;
+          this.createElement();
+          this.setupEventListeners();
+          this.updateShader();
+        };
+
+        ButtonGlass.prototype.createElement = function() {
+          var self = this;
+          this.wrapper = document.createElement('div');
+          this.wrapper.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:5;border-radius:inherit;overflow:hidden;';
+          this.svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+          this.svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+          this.svg.setAttribute('width', '0');
+          this.svg.setAttribute('height', '0');
+          this.svg.style.cssText = 'position:absolute;top:0;left:0;pointer-events:none;z-index:5;';
+          var defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+          var filter = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
+          filter.setAttribute('id', this.id + '_filter');
+          filter.setAttribute('filterUnits', 'userSpaceOnUse');
+          filter.setAttribute('color-interpolation-filters', 'sRGB');
+          filter.setAttribute('x', '0');
+          filter.setAttribute('y', '0');
+          filter.setAttribute('width', String(this.width));
+          filter.setAttribute('height', String(this.height));
+          this.feImage = document.createElementNS('http://www.w3.org/2000/svg', 'feImage');
+          this.feImage.setAttribute('id', this.id + '_map');
+          this.feImage.setAttribute('width', String(this.width));
+          this.feImage.setAttribute('height', String(this.height));
+          this.feDisplacementMap = document.createElementNS('http://www.w3.org/2000/svg', 'feDisplacementMap');
+          this.feDisplacementMap.setAttribute('in', 'SourceGraphic');
+          this.feDisplacementMap.setAttribute('in2', this.id + '_map');
+          this.feDisplacementMap.setAttribute('xChannelSelector', 'R');
+          this.feDisplacementMap.setAttribute('yChannelSelector', 'G');
+          filter.appendChild(this.feImage);
+          filter.appendChild(this.feDisplacementMap);
+          defs.appendChild(filter);
+          this.svg.appendChild(defs);
+          this.canvas = document.createElement('canvas');
+          this.canvas.width = this.width * this.canvasDPI;
+          this.canvas.height = this.height * this.canvasDPI;
+          this.canvas.style.display = 'none';
+          this.context = this.canvas.getContext('2d');
+        };
+
+        ButtonGlass.prototype.setupEventListeners = function() {
+          var self = this;
+          function onMove(e) {
+            var rect = self.wrapper.getBoundingClientRect();
+            self.mouse.x = (e.clientX - rect.left) / rect.width;
+            self.mouse.y = (e.clientY - rect.top) / rect.height;
+            self.mouseUsed = true;
+            self.updateShader();
+          }
+          this.wrapper.addEventListener('mousemove', onMove);
+          this.wrapper.addEventListener('mouseenter', function() { self.mouseUsed = true; });
+          this.wrapper.addEventListener('mouseleave', function() {
+            self.mouseUsed = false;
+            self.mouse.x = 0.5;
+            self.mouse.y = 0.5;
+            self.updateShader();
+          });
+        };
+
+        ButtonGlass.prototype.updateShader = function() {
+          var self = this;
+          var mouseProxy = new Proxy(this.mouse, {
+            get: function(target, prop) {
+              if (prop === 'x' || prop === 'y') self.mouseUsed = true;
+              return target[prop];
+            }
+          });
+
+          var w = this.canvas.width, h = this.canvas.height;
+          var data = new Uint8ClampedArray(w * h * 4);
+          var maxScale = 0;
+          var rawValues = [];
+
+          for (var i = 0; i < data.length; i += 4) {
+            var x = (i / 4) % w;
+            var y = Math.floor(i / 4 / w);
+            var pos = this.fragment({ x: x / w, y: y / h }, mouseProxy);
+            var dx = pos.x * w - x;
+            var dy = pos.y * h - y;
+            if (Math.abs(dx) > maxScale) maxScale = Math.abs(dx);
+            if (Math.abs(dy) > maxScale) maxScale = Math.abs(dy);
+            rawValues.push(dx, dy);
+          }
+
+          maxScale = Math.max(maxScale, 0.1);
+          var idx = 0;
+          for (var j = 0; j < data.length; j += 4) {
+            var r = rawValues[idx++] / (maxScale * 2) + 0.5;
+            var g = rawValues[idx++] / (maxScale * 2) + 0.5;
+            data[j] = r * 255;
+            data[j+1] = g * 255;
+            data[j+2] = 0;
+            data[j+3] = 255;
+          }
+
+          this.context.putImageData(new ImageData(data, w, h), 0, 0);
+          this.feImage.setAttributeNS('http://www.w3.org/1999/xlink', 'href', this.canvas.toDataURL());
+          this.feDisplacementMap.setAttribute('scale', String((maxScale * 2) / this.canvasDPI));
+        };
+
+        ButtonGlass.prototype.appendTo = function(parent) {
+          parent.appendChild(this.svg);
+          parent.appendChild(this.wrapper);
+        };
+        ButtonGlass.prototype.destroy = function() {
+          this.svg.remove();
+          this.wrapper.remove();
+          this.canvas.remove();
+        };
+
+        function attachButtonGlass(buttonElement) {
+          var rect = buttonElement.getBoundingClientRect();
+          var w = rect.width || 100;
+          var h = rect.height || 40;
+          var glass = new ButtonGlass({
+            width: w,
+            height: h,
+            container: buttonElement,
+            fragment: function(uv, mouse) {
+              var ix = uv.x - 0.5;
+              var iy = uv.y - 0.5;
+              var dist = roundedRectSDF(ix, iy, 0.45, 0.25, 0.6);
+              var disp = smoothStep(0.8, 0, dist - 0.15);
+              var scaled = smoothStep(0, 1, disp);
+              var strength = 0.35;
+              var mx = mouse.x - 0.5;
+              var my = mouse.y - 0.5;
+              var influence = 1 - smoothStep(0.1, 0.4, Math.hypot(mx, my));
+              var effective = scaled * strength * (0.5 + 0.5 * influence);
+              return texture(ix * effective * 1.2 + 0.5, iy * effective * 1.2 + 0.5);
+            }
+          });
+          glass.appendTo(buttonElement);
+          return glass;
+        }
+
+        window.attachButtonGlass = attachButtonGlass;
+
+        document.querySelectorAll('.btn').forEach(function(btn) {
+          var glassEl = btn.querySelector('.btn-glass');
+          if (!glassEl) return;
+          attachButtonGlass(glassEl);
+        });
+      })();
+
+
+      // ===== 物理倾斜 (3D Tilt) =====
+      (function() {
+        var buttons = document.querySelectorAll('.btn');
+
+        buttons.forEach(function(btn) {
+          var isPressed = false;
+
+          function applyTilt(rotX, rotY, scale) {
+            btn.style.transform = 'perspective(600px) rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg) scale(' + scale + ')';
+          }
+
+          function resetTilt() {
+            applyTilt(0, 0, 1);
+          }
+
+          function handleMove(e) {
+            if (isPressed) return;
+            var rect = btn.getBoundingClientRect();
+            var x = (e.clientX - rect.left) / rect.width - 0.5;
+            var y = (e.clientY - rect.top) / rect.height - 0.5;
+            var rotY = x * 16;
+            var rotX = -y * 16;
+            var scale = 1.04;
+            applyTilt(rotX, rotY, scale);
+          }
+
+          function handleLeave() {
+            if (!isPressed) {
+              resetTilt();
+            }
+          }
+
+          function handleDown(e) {
+            isPressed = true;
+            applyTilt(0, 0, 0.94);
+          }
+
+          function handleUp(e) {
+            isPressed = false;
+            var rect = btn.getBoundingClientRect();
+            var x = (e.clientX - rect.left) / rect.width - 0.5;
+            var y = (e.clientY - rect.top) / rect.height - 0.5;
+            if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
+              var rotY = x * 16;
+              var rotX = -y * 16;
+              applyTilt(rotX, rotY, 1.04);
+            } else {
+              resetTilt();
+            }
+          }
+
+          btn.addEventListener('mousemove', handleMove);
+          btn.addEventListener('mouseleave', handleLeave);
+          btn.addEventListener('mousedown', handleDown);
+          btn.addEventListener('mouseup', handleUp);
+          // 防止鼠标在按钮外释放导致一直按下
+          document.addEventListener('mouseup', function(e) {
+            if (isPressed) {
+              isPressed = false;
+              resetTilt();
+            }
+          });
+
+          // 初始复位
+          resetTilt();
+        });
+      })();
+
+
+      // ===== 主题切换 =====
+      (function() {
+        var toggle = document.getElementById('themeToggle');
+        var body = document.body;
+        var isLight = false;
+
+        toggle.addEventListener('click', function() {
+          isLight = !isLight;
+          body.classList.toggle('light', isLight);
+          toggle.textContent = isLight ? '☽' : '☀';
+        });
+      })();
+
+
+      // ===== 基础交互 =====
+      (function() {
+        var dropZone = document.getElementById('dropZone');
+        dropZone.addEventListener('dragover', function(e) {
+          e.preventDefault();
+          dropZone.classList.add('dragover');
+        });
+        dropZone.addEventListener('dragleave', function() {
+          dropZone.classList.remove('dragover');
+        });
+        dropZone.addEventListener('drop', function(e) {
+          e.preventDefault();
+          dropZone.classList.remove('dragover');
+          var items = e.dataTransfer.items;
+          if (items.length > 0) {
+            var entry = items[0].webkitGetAsEntry();
+            if (entry && entry.isDirectory) {
+              dropZone.innerHTML = '<strong>已选择文件夹</strong><br />' + (entry.fullPath || entry.name);
+            }
+          }
+        });
+
+        document.getElementById('btnPick').addEventListener('click', function() {});
+        document.getElementById('btnSettings').addEventListener('click', function() {});
+        document.getElementById('btnHistory').addEventListener('click', function() {});
+
+        var glass = document.getElementById('glass');
+        var isPaused = false;
+        function updatePauseState() {
+          var paused = document.hidden;
+          if (paused !== isPaused) {
+            isPaused = paused;
+            document.body.classList.toggle('paused', paused);
+          }
+        }
+        document.addEventListener('visibilitychange', updatePauseState);
+        updatePauseState();
+
+        console.log('woGAer UI ready');
+      })();
+    })();
+  </script>
+</body>
 </html>

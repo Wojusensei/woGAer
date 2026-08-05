@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>woGAer</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    body {
+      min-height: 100vh;
+      background: radial-gradient(ellipse at 20% 30%, #1a1e2e, #0b0d14);
+      font-family: -apple-system, "Helvetica Neue", "Segoe UI", sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      margin: 0;
+    }
+
+    .glass {
+      position: relative;
+      width: 100%;
+      max-width: 920px;
+      padding: 48px 40px 40px 40px;
+      border-radius: 56px;
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(18px) saturate(1.3);
+      -webkit-backdrop-filter: blur(18px) saturate(1.3);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+      transition: backdrop-filter 0.2s;
+      overflow: hidden;
+    }
+
+    .glass::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 58px;
+      padding: 2px;
+      background: conic-gradient(
+        from 0deg,
+        rgba(180, 220, 255, 0.35),
+        rgba(120, 180, 255, 0.10),
+        rgba(200, 150, 255, 0.30),
+        rgba(180, 220, 255, 0.35)
+      );
+      -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+      mask-composite: exclude;
+      pointer-events: none;
+      animation: flowBorder 8s linear infinite;
+      z-index: 1;
+    }
+
+    @keyframes flowBorder {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .glass::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 56px;
+      background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), 
+                  rgba(255, 255, 255, 0.20) 0%, 
+                  rgba(255, 255, 255, 0.02) 50%, 
+                  transparent 80%);
+      pointer-events: none;
+      transition: background 0.08s ease-out;
+      z-index: 1;
+    }
+
+    .title {
+      position: relative;
+      z-index: 2;
+      font-size: 38px;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #f0f4ff 20%, #b0ccff 80%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 6px;
+    }
+
+    .sub {
+      position: relative;
+      z-index: 2;
+      font-size: 15px;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.45);
+      letter-spacing: 0.4px;
+      margin-bottom: 36px;
+    }
+
+    .btn {
+      position: relative;
+      z-index: 2;
+      display: inline-block;
+      padding: 14px 36px;
+      border: none;
+      border-radius: 100px;
+      font-size: 16px;
+      font-weight: 500;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.07);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.10);
+      cursor: pointer;
+      transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                  background 0.25s ease, 
+                  box-shadow 0.30s ease;
+      will-change: transform;
+      margin-right: 16px;
+      margin-bottom: 12px;
+      letter-spacing: 0.3px;
+    }
+
+    .btn:hover {
+      transform: scale(1.04) translateY(-2px);
+      background: rgba(255, 255, 255, 0.13);
+      box-shadow: 0 12px 40px rgba(80, 140, 255, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.20);
+    }
+
+    .btn:active {
+      transform: scale(0.94) translateY(2px);
+      transition-duration: 0.06s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, rgba(100, 160, 255, 0.25), rgba(160, 120, 255, 0.20));
+      border-color: rgba(160, 200, 255, 0.25);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, rgba(100, 160, 255, 0.35), rgba(160, 120, 255, 0.30));
+      border-color: rgba(160, 200, 255, 0.40);
+    }
+
+    .drop-zone {
+      position: relative;
+      z-index: 2;
+      margin-top: 28px;
+      padding: 44px 20px;
+      border: 2px dashed rgba(255, 255, 255, 0.12);
+      border-radius: 32px;
+      background: rgba(255, 255, 255, 0.02);
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+      text-align: center;
+      color: rgba(255, 255, 255, 0.35);
+      font-size: 15px;
+      transition: background 0.3s, border-color 0.3s;
+      cursor: default;
+    }
+
+    .drop-zone.dragover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(160, 200, 255, 0.35);
+    }
+
+    .drop-zone strong {
+      color: rgba(255, 255, 255, 0.55);
+      font-weight: 500;
+    }
+
+    .paused .glass::before {
+      animation-play-state: paused;
+    }
+    .paused .glass::after {
+      transition: none;
+    }
+
+    @media (max-width: 600px) {
+      .glass { padding: 32px 20px; border-radius: 32px; }
+      .title { font-size: 28px; }
+      .btn { padding: 12px 24px; font-size: 14px; margin-right: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="glass" id="glass">
+    <div class="title">woGAer</div>
+    <div class="sub">GitHub Actions · 液态构建工坊</div>
+
+    <div>
+      <button class="btn btn-primary" id="btnPick">选择项目</button>
+      <button class="btn" id="btnSettings">设置</button>
+      <button class="btn" id="btnHistory">历史</button>
+    </div>
+
+    <div class="drop-zone" id="dropZone">
+      <strong>拖拽项目文件夹至此</strong><br />
+      或点击上方「选择项目」浏览
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      'use strict';
+
+      const glass = document.getElementById('glass');
+
+      glass.addEventListener('mousemove', (e) => {
+        const rect = glass.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        glass.style.setProperty('--mx', x + '%');
+        glass.style.setProperty('--my', y + '%');
+      });
+
+      let isPaused = false;
+
+      function updatePauseState() {
+        const paused = document.hidden;
+        if (paused !== isPaused) {
+          isPaused = paused;
+          document.body.classList.toggle('paused', paused);
+        }
+      }
+
+      document.addEventListener('visibilitychange', updatePauseState);
+      updatePauseState();
+
+      const dropZone = document.getElementById('dropZone');
+
+      dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+      });
+
+      dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('dragover');
+      });
+
+      dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        const items = e.dataTransfer.items;
+        if (items.length > 0) {
+          const entry = items[0].webkitGetAsEntry();
+          if (entry && entry.isDirectory) {
+            dropZone.innerHTML = '<strong>已选择文件夹</strong><br />' + (entry.fullPath || entry.name);
+          }
+        }
+      });
+
+      document.getElementById('btnPick').addEventListener('click', function() {});
+      document.getElementById('btnSettings').addEventListener('click', function() {});
+      document.getElementById('btnHistory').addEventListener('click', function() {});
+
+      console.log('woGAer UI ready');
+    })();
+  </script>
+</body>
+</html>
