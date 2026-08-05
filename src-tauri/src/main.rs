@@ -15,7 +15,6 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tauri::{Manager, State, Window, Emitter};
 use tauri_plugin_dialog::DialogExt;
-use std::sync::mpsc;
 
 use db::{Database, BuildRecord};
 use git::GitRepo;
@@ -85,24 +84,20 @@ pub struct DownloadRequest {
 }
 
 #[tauri::command]
-fn open_folder_dialog(window: Window, state: State<AppState>) -> Result<String, String> {
-    let i18n = state.i18n.lock().unwrap();
-    let title = i18n.get("folder_picker_title");
+async fn open_folder_dialog(window: Window, state: State<'_, AppState>) -> Result<String, String> {
+    let title = state.i18n.lock().unwrap().get("folder_picker_title");
 
-    let (tx, rx) = mpsc::channel();
-
-    window
+    match window
         .dialog()
         .file()
         .set_title(&title)
-        .pick_folder(move |path| {
-            let _ = tx.send(path);
-        });
-
-    if let Ok(Some(path)) = rx.recv() {
-        Ok(path.to_string())
-    } else {
-        Err(i18n.get("no_folder_selected"))
+        .blocking_pick_folder()
+    {
+        Some(path) => path
+            .into_path()
+            .map(|p| p.to_string_lossy().to_string())
+            .map_err(|e| e.to_string()),
+        None => Err(state.i18n.lock().unwrap().get("no_folder_selected")),
     }
 }
 
