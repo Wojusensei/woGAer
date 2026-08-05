@@ -290,6 +290,101 @@
     body.dark .lang-toggle:hover {
       background: rgba(255, 255, 255, 0.12);
     }
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      overflow: hidden;
+      color: #1a1a2e;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      transition: background 0.3s, transform 0.3s, border-color 0.3s;
+    }
+    body.dark .user-avatar {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+    .user-avatar:hover {
+      transform: scale(1.08);
+    }
+    .user-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .user-avatar img[hidden],
+    .user-avatar img:not([src]),
+    .user-avatar img[src=""] {
+      display: none;
+    }
+    .avatar-placeholder {
+      font-size: 18px;
+      font-weight: 500;
+      line-height: 1;
+      color: rgba(0, 0, 0, 0.4);
+    }
+    body.dark .avatar-placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+    .user-menu {
+      position: absolute;
+      top: 52px;
+      right: 0;
+      z-index: 120;
+      min-width: 190px;
+      padding: 8px;
+      border-radius: 16px;
+      background: rgba(30, 30, 50, 0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    }
+    body.light .user-menu {
+      background: rgba(245, 245, 250, 0.95);
+      color: #111;
+      border-color: rgba(0, 0, 0, 0.1);
+    }
+    .user-menu[hidden] {
+      display: none;
+    }
+    .user-menu-name {
+      padding: 8px 12px;
+      font-size: 13px;
+      opacity: 0.85;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 6px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    body.light .user-menu-name {
+      border-bottom-color: rgba(0, 0, 0, 0.08);
+    }
+    .user-menu button {
+      width: 100%;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      color: inherit;
+      cursor: pointer;
+      font-size: 13px;
+      text-align: left;
+    }
+    .user-menu button:hover {
+      background: rgba(255, 60, 60, 0.15);
+    }
     .bottom-right {
       position: fixed;
       bottom: 12px;
@@ -424,6 +519,207 @@
     }
     .settings-actions .primary:hover {
       background: rgba(60, 120, 220, 0.8);
+    }
+    .settings-error {
+      margin-top: 12px;
+      font-size: 12px;
+      line-height: 1.5;
+      color: #ff6b6b;
+      background: rgba(255, 80, 80, 0.08);
+      border: 1px solid rgba(255, 80, 80, 0.2);
+      border-radius: 10px;
+      padding: 8px 10px;
+    }
+    .settings-error[hidden] {
+      display: none;
+    }
+    .settings-hint {
+      font-size: 12px;
+      opacity: 0.7;
+      margin-top: 4px;
+    }
+    .login-guide {
+      margin-top: 12px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    body.light .login-guide {
+      background: rgba(0, 0, 0, 0.03);
+      border-color: rgba(0, 0, 0, 0.08);
+    }
+    .guide-title {
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+    .guide-step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 0;
+      font-size: 12px;
+      opacity: 0.85;
+    }
+    .guide-num {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      flex: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      background: rgba(60, 120, 220, 0.18);
+      border: 1px solid rgba(60, 120, 220, 0.25);
+    }
+    .guide-actions {
+      margin-top: 10px;
+      display: flex;
+    }
+    .guide-actions button,
+    .advanced-toggle {
+      padding: 8px 18px;
+      border: none;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      background: rgba(60, 120, 220, 0.18);
+      color: inherit;
+    }
+    .guide-actions button:hover,
+    .advanced-toggle:hover {
+      background: rgba(60, 120, 220, 0.3);
+    }
+    .advanced-login {
+      margin-top: 14px;
+    }
+    .advanced-toggle {
+      width: 100%;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    body.light .advanced-toggle {
+      background: rgba(0, 0, 0, 0.03);
+      border-color: rgba(0, 0, 0, 0.08);
+    }
+    .advanced-body {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    body.light .advanced-body {
+      background: rgba(0, 0, 0, 0.02);
+      border-color: rgba(0, 0, 0, 0.07);
+    }
+    .advanced-body[hidden] {
+      display: none;
+    }
+    .device-flow {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    body.light .device-flow {
+      background: rgba(0, 0, 0, 0.03);
+      border-color: rgba(0, 0, 0, 0.1);
+    }
+    .device-flow[hidden] {
+      display: none;
+    }
+    .device-code {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 4px;
+      margin: 6px 0;
+    }
+    .device-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+    .device-actions button {
+      padding: 6px 14px;
+      border: none;
+      border-radius: 100px;
+      font-size: 12px;
+      cursor: pointer;
+      background: rgba(60, 120, 220, 0.18);
+      color: inherit;
+    }
+    .status-bar {
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-width: min(420px, calc(100vw - 32px));
+      pointer-events: none;
+    }
+    .status-msg {
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 10px 14px;
+      border-radius: 14px;
+      font-size: 13px;
+      line-height: 1.5;
+      background: rgba(30, 30, 50, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      color: #fff;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+      animation: statusIn 0.25s ease;
+    }
+    body.light .status-msg {
+      background: rgba(245, 245, 250, 0.95);
+      color: #111;
+    }
+    .status-msg.success {
+      border-left: 3px solid #3ecf8e;
+    }
+    .status-msg.error {
+      border-left: 3px solid #ff6b6b;
+    }
+    .status-msg.info {
+      border-left: 3px solid #f5c542;
+    }
+    .status-msg.fade-out {
+      animation: statusOut 0.4s ease forwards;
+    }
+    @keyframes statusIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: none; }
+    }
+    @keyframes statusOut {
+      from { opacity: 1; }
+      to { opacity: 0; transform: translateY(8px); }
+    }
+    .status-action {
+      padding: 5px 12px;
+      border: none;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      background: rgba(60, 120, 220, 0.2);
+      color: inherit;
+    }
+    .status-action:hover {
+      background: rgba(60, 120, 220, 0.35);
     }
     .build-status {
       position: relative;
@@ -584,6 +880,305 @@
       padding: 18px 0;
       font-size: 13px;
     }
+    .tab-bar {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 22px;
+      padding: 6px;
+      border-radius: 100px;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    body.dark .tab-bar {
+      background: rgba(255, 255, 255, 0.03);
+      border-color: rgba(255, 255, 255, 0.07);
+    }
+    .tab {
+      flex: 1;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 100px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      background: transparent;
+      color: rgba(0, 0, 0, 0.5);
+      transition: background 0.25s, color 0.25s, box-shadow 0.25s;
+    }
+    body.dark .tab {
+      color: rgba(255, 255, 255, 0.45);
+    }
+    .tab:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+    body.dark .tab:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .tab.active {
+      background: rgba(255, 255, 255, 0.65);
+      color: #111;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    }
+    body.dark .tab.active {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+    }
+    .tab-refresh {
+      flex: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      background: rgba(255, 255, 255, 0.2);
+      color: rgba(0, 0, 0, 0.55);
+    }
+    body.dark .tab-refresh {
+      background: rgba(255, 255, 255, 0.06);
+      color: rgba(255, 255, 255, 0.5);
+    }
+    .tab-panel[hidden] {
+      display: none;
+    }
+    .tab-panel {
+      position: relative;
+      z-index: 2;
+    }
+    .build-panel {
+      margin-top: 16px;
+    }
+    .build-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .build-panel-title {
+      font-size: 15px;
+      font-weight: 500;
+    }
+    .build-panel-meta {
+      font-size: 12px;
+      opacity: 0.65;
+      margin-top: 3px;
+    }
+    .build-section-title {
+      font-size: 13px;
+      font-weight: 500;
+      margin: 16px 0 8px;
+      opacity: 0.85;
+    }
+    .thermo-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .thermo-label {
+      width: 78px;
+      flex: none;
+      font-size: 12px;
+      opacity: 0.75;
+    }
+    .thermo-track {
+      position: relative;
+      flex: 1;
+      height: 18px;
+      border-radius: 100px;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      overflow: hidden;
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.12);
+    }
+    body.dark .thermo-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+    .thermo-fill {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 0%;
+      border-radius: 100px;
+      background: linear-gradient(90deg, rgba(80, 140, 255, 0.9), rgba(120, 190, 255, 0.95));
+      box-shadow: 0 0 14px rgba(90, 160, 255, 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.5);
+      transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .thermo-fill.done {
+      width: 100%;
+    }
+    .thermo-fill.error {
+      background: linear-gradient(90deg, rgba(255, 90, 90, 0.9), rgba(255, 130, 110, 0.95));
+      box-shadow: 0 0 14px rgba(255, 90, 90, 0.4);
+    }
+    .thermo-fill.run {
+      width: 42%;
+      animation: thermoRun 1.6s ease-in-out infinite;
+    }
+    @keyframes thermoRun {
+      0% { width: 8%; margin-left: 0; }
+      50% { width: 70%; }
+      100% { width: 8%; margin-left: 92%; }
+    }
+    .thermo-bulb {
+      flex: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.12);
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.12);
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+    .thermo-bulb.lit {
+      background: radial-gradient(circle at 35% 30%, rgba(170, 215, 255, 0.95), rgba(80, 140, 255, 0.9));
+      box-shadow: 0 0 14px rgba(90, 160, 255, 0.6);
+    }
+    .thermo-bulb.error-lit {
+      background: radial-gradient(circle at 35% 30%, rgba(255, 180, 160, 0.95), rgba(255, 90, 90, 0.9));
+      box-shadow: 0 0 14px rgba(255, 90, 90, 0.5);
+    }
+    .build-logs {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 180px;
+      overflow-y: auto;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    body.dark .build-logs {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .log-line {
+      display: flex;
+      gap: 8px;
+      align-items: baseline;
+    }
+    .log-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex: none;
+      align-self: center;
+    }
+    .log-dot.info {
+      background: #f5c542;
+    }
+    .log-dot.success {
+      background: #3ecf8e;
+    }
+    .log-dot.error {
+      background: #ff6b6b;
+    }
+    .log-time {
+      opacity: 0.5;
+      flex: none;
+    }
+    .history-table-wrap {
+      margin-top: 16px;
+      max-height: 380px;
+      overflow-y: auto;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    body.dark .history-table-wrap {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    .history-table th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: rgba(245, 245, 250, 0.95);
+      color: rgba(0, 0, 0, 0.6);
+      text-align: left;
+      padding: 10px 12px;
+      font-weight: 500;
+    }
+    body.dark .history-table th {
+      background: rgba(30, 30, 50, 0.95);
+      color: rgba(255, 255, 255, 0.6);
+    }
+    .history-table td {
+      padding: 10px 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      vertical-align: middle;
+    }
+    body.dark .history-table td {
+      border-top-color: rgba(255, 255, 255, 0.05);
+    }
+    .row-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .table-btn {
+      padding: 5px 12px;
+      border: none;
+      border-radius: 100px;
+      font-size: 12px;
+      cursor: pointer;
+      background: rgba(60, 120, 220, 0.15);
+      color: inherit;
+    }
+    .table-btn:hover {
+      background: rgba(60, 120, 220, 0.3);
+    }
+    .status-chip.status-queued,
+    .status-chip.status-in_progress,
+    .status-chip.status-pending {
+      background: rgba(245, 197, 66, 0.15);
+      border-color: rgba(245, 197, 66, 0.3);
+    }
+    .status-chip.status-completed,
+    .status-chip.status-success {
+      background: rgba(62, 207, 142, 0.15);
+      border-color: rgba(62, 207, 142, 0.3);
+    }
+    .status-chip.status-failure,
+    .status-chip.status-cancelled,
+    .status-chip.status-failed {
+      background: rgba(255, 107, 107, 0.15);
+      border-color: rgba(255, 107, 107, 0.3);
+    }
+    .artifact-detail-row td {
+      padding: 0 12px 12px;
+    }
+    .settings-progress {
+      margin-top: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .settings-progress[hidden] {
+      display: none;
+    }
+    .settings-progress .progress-track {
+      flex: 1;
+      height: 8px;
+    }
+    .settings-progress .progress-fill.run {
+      width: 45%;
+      animation: thermoRun 1.4s ease-in-out infinite;
+    }
     @media (max-width: 600px) {
       .glass {
         padding: 32px 20px;
@@ -605,9 +1200,13 @@
         gap: 6px;
       }
       .theme-toggle,
-      .lang-toggle {
+      .lang-toggle,
+      .user-avatar {
         width: 32px;
         height: 32px;
+        font-size: 15px;
+      }
+      .avatar-placeholder {
         font-size: 15px;
       }
       .bottom-right {
@@ -625,6 +1224,21 @@
       .history-panel {
         padding: 24px 18px;
       }
+      .tab {
+        padding: 8px 12px;
+        font-size: 13px;
+      }
+      .tab-bar {
+        margin-bottom: 16px;
+      }
+      .thermo-label {
+        width: 64px;
+        font-size: 11px;
+      }
+      .history-table th,
+      .history-table td {
+        padding: 8px 10px;
+      }
     }
   </style>
 </head>
@@ -632,43 +1246,87 @@
   <div class="glass" id="glass">
     <div id="pyramid-host"></div>
     <div class="top-right">
+      <div class="user-avatar" id="userAvatar" title="点击登录">
+        <span class="avatar-placeholder" id="avatarPlaceholder">无</span>
+        <img id="avatarImg" alt="" hidden />
+      </div>
+      <div class="user-menu" id="userMenu" hidden>
+        <div class="user-menu-name" id="userMenuName">未登录</div>
+        <button id="userLogout">退出登录</button>
+      </div>
       <div class="lang-toggle" id="langToggle">中</div>
       <div class="theme-toggle" id="themeToggle">☽</div>
     </div>
     <div class="content">
       <div class="title" id="appTitle">woGAer</div>
       <div class="sub" id="appSub">GitHub Actions · 液态构建工坊</div>
-      <div class="btn-group">
-        <button class="btn btn-primary" id="btnPick">
-          <span class="btn-text" id="btnPickText">选择项目</span>
-          <span class="btn-glass"></span>
-        </button>
-        <button class="btn" id="btnSettings">
-          <span class="btn-text" id="btnSettingsText">设置</span>
-          <span class="btn-glass"></span>
-        </button>
-        <button class="btn" id="btnHistory">
-          <span class="btn-text" id="btnHistoryText">历史</span>
-          <span class="btn-glass"></span>
-        </button>
-        <button class="btn" id="btnBuild">
-          <span class="btn-text" id="btnBuildText">触发构建</span>
-          <span class="btn-glass"></span>
-        </button>
+      <div class="tab-bar" id="tabBar">
+        <button class="tab active" id="tabProject"><span id="tabProjectText">项目</span></button>
+        <button class="tab" id="tabBuild"><span id="tabBuildText">构建</span></button>
+        <button class="tab" id="tabHistory"><span id="tabHistoryText">历史</span></button>
+        <button class="tab-refresh" id="tabRefresh" title="刷新">刷新</button>
       </div>
-      <div class="drop-zone" id="dropZone">
-        <strong id="dropStrong">点击「选择项目」按钮浏览文件夹</strong><br />
-        <span id="dropHint">支持 Git 仓库自动检测</span>
-      </div>
-      <div class="build-status" id="buildStatus" hidden>
-        <div class="build-status-title" id="buildStatusTitle">构建状态</div>
-        <div class="build-status-row">
-          <span id="buildStatusText">-</span>
-          <span class="status-chip" id="buildStatusChip">-</span>
+      <div class="tab-panel active" id="panelProject">
+        <div class="btn-group">
+          <button class="btn btn-primary" id="btnPick">
+            <span class="btn-text" id="btnPickText">选择项目</span>
+            <span class="btn-glass"></span>
+          </button>
+          <button class="btn" id="btnSettings">
+            <span class="btn-text" id="btnSettingsText">设置</span>
+            <span class="btn-glass"></span>
+          </button>
+          <button class="btn" id="btnHistory">
+            <span class="btn-text" id="btnHistoryText">历史</span>
+            <span class="btn-glass"></span>
+          </button>
+          <button class="btn" id="btnBuild">
+            <span class="btn-text" id="btnBuildText">触发构建</span>
+            <span class="btn-glass"></span>
+          </button>
         </div>
-        <div class="build-status-row">
-          <span id="buildStatusMeta"></span>
-          <a id="buildStatusLink" href="#" target="_blank" hidden>查看 GitHub</a>
+        <div class="drop-zone" id="dropZone">
+          <strong id="dropStrong">点击「选择项目」按钮浏览文件夹</strong><br />
+          <span id="dropHint">支持 Git 仓库自动检测</span>
+        </div>
+      </div>
+      <div class="tab-panel" id="panelBuild" hidden>
+        <div class="build-panel">
+          <div class="build-head">
+            <div>
+              <div class="build-panel-title" id="buildPanelTitle">构建进度</div>
+              <div class="build-panel-meta" id="buildMeta">尚未触发构建</div>
+            </div>
+            <span class="status-chip" id="buildChip">-</span>
+          </div>
+          <div class="build-status" id="buildStatus" hidden>
+            <div class="build-status-row">
+              <span id="buildStatusText">-</span>
+              <a id="buildStatusLink" href="#" target="_blank" hidden>查看 GitHub</a>
+            </div>
+          </div>
+          <div class="build-section-title" id="buildProgressTitle">构建进度</div>
+          <div class="build-bars" id="buildBars"></div>
+          <div class="build-section-title" id="buildLogsTitle">构建日志</div>
+          <div class="build-logs" id="buildLogs"></div>
+          <div class="build-section-title" id="buildArtifactsTitle">构建产物</div>
+          <div id="buildArtifacts"></div>
+        </div>
+      </div>
+      <div class="tab-panel" id="panelHistory" hidden>
+        <div class="history-table-wrap">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th id="thRepo">仓库名</th>
+                <th id="thTime">触发时间</th>
+                <th id="thStatus">状态</th>
+                <th id="thArtifacts">产物</th>
+                <th id="thActions">操作</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody"></tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -685,6 +1343,16 @@
         <label id="settingsTokenLabel">GitHub Token</label>
         <input type="password" id="settingsTokenInput" placeholder="输入 Personal Access Token" />
       </div>
+      <div class="login-guide">
+        <div class="guide-title" id="guideTitle">登录步骤</div>
+        <div class="guide-step"><span class="guide-num">1</span><span id="guideStep1">点击「生成 Token」打开 GitHub 授权页</span></div>
+        <div class="guide-step"><span class="guide-num">2</span><span id="guideStep2">勾选 workflow 权限并生成 Token</span></div>
+        <div class="guide-step"><span class="guide-num">3</span><span id="guideStep3">复制 Token 粘贴到上方输入框</span></div>
+        <div class="guide-step"><span class="guide-num">4</span><span id="guideStep4">点击「保存」完成登录</span></div>
+        <div class="guide-actions">
+          <button id="generateTokenBtn">生成 Token</button>
+        </div>
+      </div>
       <div class="settings-item">
         <label id="settingsLangLabel">语言</label>
         <select id="settingsLangSelect">
@@ -692,21 +1360,41 @@
           <option value="en">English</option>
         </select>
       </div>
+      <div class="settings-hint" id="settingsLoginHint" hidden></div>
+      <div class="advanced-login">
+        <button class="advanced-toggle" id="advancedToggle">高级：设备码登录（可选）</button>
+        <div class="advanced-body" id="advancedBody" hidden>
+          <div class="settings-item">
+            <label id="settingsClientIdLabel">OAuth Client ID</label>
+            <input type="text" id="settingsClientIdInput" placeholder="GitHub OAuth App Client ID" />
+          </div>
+          <div class="settings-item">
+            <label id="deviceLoginLabel">设备码登录</label>
+            <button id="deviceLoginBtn">获取设备码</button>
+          </div>
+          <div class="device-flow" id="deviceFlow" hidden>
+            <div id="deviceFlowText"></div>
+            <div class="device-code" id="deviceCodeText"></div>
+            <div class="device-actions">
+              <button id="openVerifyBtn">打开验证页面</button>
+              <button id="cancelDeviceBtn">取消</button>
+            </div>
+            <div class="settings-hint" id="deviceStatusText"></div>
+          </div>
+        </div>
+      </div>
+      <div class="settings-error" id="settingsError" hidden></div>
+      <div class="settings-progress" id="settingsProgress" hidden>
+        <div class="progress-track"><div class="progress-fill run" id="settingsProgressFill"></div></div>
+        <span class="settings-hint" id="settingsProgressText">正在登录...</span>
+      </div>
       <div class="settings-actions">
         <button id="settingsClose">关闭</button>
         <button class="primary" id="settingsSave">保存</button>
       </div>
     </div>
   </div>
-  <div class="settings-overlay" id="historyOverlay">
-    <div class="settings-panel history-panel">
-      <h2 id="historyTitle">历史记录</h2>
-      <div class="history-list" id="historyList"></div>
-      <div class="settings-actions">
-        <button id="historyClose">关闭</button>
-      </div>
-    </div>
-  </div>
+  <div class="status-bar" id="statusBar"></div>
   <script type="module">
     import { invoke } from '@tauri-apps/api/core';
     import { listen } from '@tauri-apps/api/event';
@@ -722,9 +1410,19 @@
       branch: 'main',
       gitHubToken: null,
       isLoggedIn: false,
+      userInfo: null,
+      clientId: '',
       lastRunId: null,
       statusTimer: null,
+      pollErrors: 0,
       downloadDir: null,
+      activeTab: 'project',
+      buildStartTime: null,
+      buildElapsedTimer: null,
+      buildLogs: [],
+      lastStatus: '',
+      buildTriggering: false,
+      historyRecords: [],
     };
 
     const translations = {
@@ -762,10 +1460,78 @@
         downloadComplete: '下载完成',
         downloadFailed: '下载失败',
         triggering: '触发中...',
+        triggeringBuild: '正在触发构建...',
         statusFailed: '失败',
         loginRequired: '请先登录 GitHub',
         projectRequired: '请先选择一个项目文件夹',
         repoInfoMissing: '无法从 Git remote 解析仓库信息',
+        clickToLogin: '点击登录',
+        loggedInAs: '已登录为',
+        logout: '退出登录',
+        loginError: 'Token 无效或权限不足',
+        sessionExpired: '登录已失效，请重新登录',
+        userLoadFailed: '加载用户信息失败',
+        alreadyLoggedIn: '当前已登录',
+        loggedOut: '已退出登录',
+        clientIdRequired: '请先填写 GitHub OAuth Client ID',
+        deviceFlowHint: '请在浏览器中打开以下页面，并输入设备码完成授权（支持 2FA）：',
+        deviceWaiting: '等待授权...',
+        deviceDenied: '授权已被拒绝',
+        deviceExpired: '设备码已过期，请重新获取',
+        deviceCancelled: '设备码登录已取消',
+        langSaved: '语言已切换',
+        settingsSaved: '设置已保存',
+        settingsAutoSaved: '设置已自动保存',
+        workflowGenerated: 'Workflow 已生成',
+        workflowFailed: 'Workflow 生成失败',
+        notGitSkipped: '不是 Git 仓库，跳过 workflow',
+        noLangSkipped: '未检测到支持的语言，跳过 workflow',
+        projectSelected: '项目已选择',
+        buildCompleted: '构建已完成',
+        buildCancelled: '构建已取消',
+        historyLoadFailed: '加载历史失败',
+        downloadSaved: '产物已下载到',
+        openFolder: '打开文件夹',
+        errPermission: 'Token 权限不足，请确保勾选了 workflow 权限',
+        errNotFound: '仓库不存在或没有访问权限',
+        errTimeout: 'API 请求超时，请检查网络连接',
+        opFailed: '操作失败',
+        guideTitle: '登录步骤',
+        guideStep1: '点击「生成 Token」打开 GitHub 授权页',
+        guideStep2: '勾选 workflow 权限并生成 Token',
+        guideStep3: '复制 Token 粘贴到上方输入框',
+        guideStep4: '点击「保存」完成登录',
+        generateToken: '生成 Token',
+        advancedLogin: '高级：设备码登录（可选）',
+        advancedHide: '收起高级选项',
+        tabProject: '项目',
+        tabBuild: '构建',
+        tabHistory: '历史',
+        tabRefresh: '刷新',
+        buildPanelTitle: '构建进度',
+        buildMetaIdle: '尚未触发构建',
+        elapsedPrefix: '已耗时',
+        buildLogsTitle: '构建日志',
+        buildArtifactsTitle: '构建产物',
+        noBuildLogs: '暂无日志',
+        buildLogTriggered: '构建已触发',
+        buildLogCompleted: '构建完成',
+        buildLogFailed: '构建失败',
+        buildLogCancelled: '构建已取消',
+        phaseQueued: '排队中',
+        phaseSetup: '环境准备',
+        phaseCheckout: '拉取代码',
+        phaseBuild: '编译打包',
+        phaseUpload: '上传产物',
+        thRepo: '仓库名',
+        thTime: '触发时间',
+        thStatus: '状态',
+        thArtifacts: '产物',
+        thActions: '操作',
+        loggingIn: '正在登录...',
+        githubSlow: 'GitHub 响应较慢，正在等待结果...',
+        loginVerifying: '正在验证 Token...',
+        openGithub: 'GitHub',
       },
       en: {
         title: 'woGAer',
@@ -801,10 +1567,78 @@
         downloadComplete: 'Download complete',
         downloadFailed: 'Download failed',
         triggering: 'Triggering...',
+        triggeringBuild: 'Triggering build...',
         statusFailed: 'Failed',
         loginRequired: 'Please log in to GitHub first',
         projectRequired: 'Please select a project folder first',
         repoInfoMissing: 'Could not parse repository info from Git remote',
+        clickToLogin: 'Click to login',
+        loggedInAs: 'Logged in as',
+        logout: 'Logout',
+        loginError: 'Token is invalid or has insufficient permissions',
+        sessionExpired: 'Session expired, please log in again',
+        userLoadFailed: 'Failed to load user info',
+        alreadyLoggedIn: 'Currently logged in',
+        loggedOut: 'Logged out',
+        clientIdRequired: 'Please enter your GitHub OAuth Client ID first',
+        deviceFlowHint: 'Open the page below in your browser and enter the device code to authorize (2FA supported):',
+        deviceWaiting: 'Waiting for authorization...',
+        deviceDenied: 'Authorization denied',
+        deviceExpired: 'Device code expired, please request a new one',
+        deviceCancelled: 'Device flow cancelled',
+        langSaved: 'Language switched',
+        settingsSaved: 'Settings saved',
+        settingsAutoSaved: 'Settings auto-saved',
+        workflowGenerated: 'Workflow generated',
+        workflowFailed: 'Workflow generation failed',
+        notGitSkipped: 'Not a Git repository, skipped workflow',
+        noLangSkipped: 'No supported language detected, skipped workflow',
+        projectSelected: 'Project selected',
+        buildCompleted: 'Build completed',
+        buildCancelled: 'Build cancelled',
+        historyLoadFailed: 'Failed to load history',
+        downloadSaved: 'Artifact downloaded to',
+        openFolder: 'Open folder',
+        errPermission: 'Token lacks permission. Make sure the workflow scope is enabled',
+        errNotFound: 'Repository not found or no access permission',
+        errTimeout: 'API request timed out. Please check your network connection',
+        opFailed: 'Operation failed',
+        guideTitle: 'Login steps',
+        guideStep1: 'Click "Generate Token" to open the GitHub authorization page',
+        guideStep2: 'Check the workflow scope and generate the token',
+        guideStep3: 'Copy the token and paste it into the input above',
+        guideStep4: 'Click "Save" to finish login',
+        generateToken: 'Generate Token',
+        advancedLogin: 'Advanced: device code login (optional)',
+        advancedHide: 'Collapse advanced options',
+        tabProject: 'Project',
+        tabBuild: 'Build',
+        tabHistory: 'History',
+        tabRefresh: 'Refresh',
+        buildPanelTitle: 'Build Progress',
+        buildMetaIdle: 'No build triggered yet',
+        elapsedPrefix: 'elapsed',
+        buildLogsTitle: 'Build Logs',
+        buildArtifactsTitle: 'Artifacts',
+        noBuildLogs: 'No logs yet',
+        buildLogTriggered: 'Build triggered',
+        buildLogCompleted: 'Build completed',
+        buildLogFailed: 'Build failed',
+        buildLogCancelled: 'Build cancelled',
+        phaseQueued: 'Queued',
+        phaseSetup: 'Preparing',
+        phaseCheckout: 'Checking out',
+        phaseBuild: 'Building',
+        phaseUpload: 'Uploading',
+        thRepo: 'Repository',
+        thTime: 'Triggered at',
+        thStatus: 'Status',
+        thArtifacts: 'Artifacts',
+        thActions: 'Actions',
+        loggingIn: 'Logging in...',
+        githubSlow: 'GitHub is responding slowly, waiting for the result...',
+        loginVerifying: 'Verifying token...',
+        openGithub: 'GitHub',
       }
     };
 
@@ -833,20 +1667,186 @@
       document.getElementById('settingsSave').textContent = t('save');
       document.getElementById('settingsTokenInput').placeholder = t('tokenPlaceholder');
       document.getElementById('settingsLangSelect').value = state.lang;
-      document.getElementById('buildStatusTitle').textContent = t('buildStatusTitle');
-      document.getElementById('historyTitle').textContent = t('historyTitle');
-      document.getElementById('historyClose').textContent = t('close');
+      document.getElementById('tabProjectText').textContent = t('tabProject');
+      document.getElementById('tabBuildText').textContent = t('tabBuild');
+      document.getElementById('tabHistoryText').textContent = t('tabHistory');
+      document.getElementById('tabRefresh').title = t('tabRefresh');
+      document.getElementById('tabRefresh').textContent = t('tabRefresh');
+      document.getElementById('buildPanelTitle').textContent = t('buildPanelTitle');
+      document.getElementById('buildProgressTitle').textContent = t('buildPanelTitle');
+      document.getElementById('buildLogsTitle').textContent = t('buildLogsTitle');
+      document.getElementById('buildArtifactsTitle').textContent = t('buildArtifactsTitle');
+      document.getElementById('thRepo').textContent = t('thRepo');
+      document.getElementById('thTime').textContent = t('thTime');
+      document.getElementById('thStatus').textContent = t('thStatus');
+      document.getElementById('thArtifacts').textContent = t('thArtifacts');
+      document.getElementById('thActions').textContent = t('thActions');
+      document.getElementById('guideTitle').textContent = t('guideTitle');
+      document.getElementById('guideStep1').textContent = t('guideStep1');
+      document.getElementById('guideStep2').textContent = t('guideStep2');
+      document.getElementById('guideStep3').textContent = t('guideStep3');
+      document.getElementById('guideStep4').textContent = t('guideStep4');
+      document.getElementById('generateTokenBtn').textContent = t('generateToken');
+      document.getElementById('advancedToggle').textContent = document.getElementById('advancedBody').hidden
+        ? t('advancedLogin')
+        : t('advancedHide');
     }
 
     getVersion().then(ver => {
       document.getElementById('versionLine').textContent = t('versionPrefix') + ver;
     }).catch(e => console.error(e));
 
-    function persistSettings() {
+    function errorText(err) {
+      if (!err) return '未知错误';
+      if (typeof err === 'string') return err;
+      return err.message || String(err);
+    }
+
+    function friendlyError(err) {
+      const msg = errorText(err);
+      const low = msg.toLowerCase();
+      if (low.includes('permission') || low.includes('403') || (low.includes('workflow') && low.includes('token'))) {
+        return t('errPermission');
+      }
+      if (low.includes('not found') || low.includes('404')) {
+        return t('errNotFound');
+      }
+      if (low.includes('timed out') || low.includes('timeout') || low.includes('connection')) {
+        return t('errTimeout');
+      }
+      return msg;
+    }
+
+    function invokeWithTimeout(command, args, ms) {
+      return new Promise((resolve, reject) => {
+        let settled = false;
+        const timer = setTimeout(() => {
+          if (!settled) {
+            settled = true;
+            reject(new Error(t('errTimeout')));
+          }
+        }, ms || 20000);
+        invoke(command, args).then(
+          res => {
+            if (!settled) {
+              settled = true;
+              clearTimeout(timer);
+              resolve(res);
+            }
+          },
+          err => {
+            if (!settled) {
+              settled = true;
+              clearTimeout(timer);
+              reject(err);
+            }
+          }
+        );
+      });
+    }
+
+    function invokeWithSlowNotice(command, args, noticeMs, hardMs) {
+      return new Promise((resolve, reject) => {
+        let settled = false;
+        let noticed = false;
+        const notice = setTimeout(() => {
+          if (!settled && !noticed) {
+            noticed = true;
+            showStatus(t('githubSlow'), 'info');
+          }
+        }, noticeMs || 10000);
+        const hard = setTimeout(() => {
+          if (!settled) {
+            settled = true;
+            clearTimeout(notice);
+            reject(new Error(t('errTimeout')));
+          }
+        }, hardMs || 120000);
+        invoke(command, args).then(
+          res => {
+            if (!settled) {
+              settled = true;
+              clearTimeout(notice);
+              clearTimeout(hard);
+              resolve(res);
+            }
+          },
+          err => {
+            if (!settled) {
+              settled = true;
+              clearTimeout(notice);
+              clearTimeout(hard);
+              reject(err);
+            }
+          }
+        );
+      });
+    }
+
+    function showStatus(message, type, duration) {
+      const bar = document.getElementById('statusBar');
+      const el = document.createElement('div');
+      el.className = 'status-msg ' + (type || 'info');
+      el.textContent = message;
+      let timer = null;
+      let remaining = duration || 5000;
+      let startedAt = Date.now();
+
+      function clearTimer() {
+        if (timer) {
+          clearTimeout(timer);
+          timer = null;
+        }
+      }
+
+      function dismiss() {
+        el.classList.add('fade-out');
+        setTimeout(() => el.remove(), 400);
+      }
+
+      function arm() {
+        clearTimer();
+        timer = setTimeout(() => {
+          remaining = 0;
+          dismiss();
+        }, remaining);
+      }
+
+      el.addEventListener('mouseenter', () => {
+        if (remaining > 0) {
+          remaining = Math.max(0, remaining - (Date.now() - startedAt));
+          clearTimer();
+          if (remaining <= 0) dismiss();
+        }
+      });
+      el.addEventListener('mouseleave', () => {
+        if (remaining > 0) {
+          startedAt = Date.now();
+          arm();
+        }
+      });
+      arm();
+      bar.appendChild(el);
+      while (bar.children.length > 5) bar.firstChild.remove();
+      return el;
+    }
+
+    function statusWithAction(message, type, label, handler) {
+      const el = showStatus(message, type);
+      const btn = document.createElement('button');
+      btn.className = 'status-action';
+      btn.textContent = label;
+      btn.addEventListener('click', handler);
+      el.appendChild(btn);
+    }
+
+    function persistSettings(tokenOverride) {
       try {
-        localStorage.setItem('wogaer.token', state.gitHubToken || '');
+        const token = tokenOverride !== undefined ? tokenOverride : state.gitHubToken;
+        localStorage.setItem('wogaer.token', token || '');
         localStorage.setItem('wogaer.lang', state.lang);
         localStorage.setItem('wogaer.theme', state.isDark ? 'dark' : 'light');
+        localStorage.setItem('wogaer.client_id', state.clientId || '');
       } catch (e) {
         console.error(e);
       }
@@ -857,10 +1857,12 @@
         const token = localStorage.getItem('wogaer.token') || '';
         const lang = localStorage.getItem('wogaer.lang') || '';
         const theme = localStorage.getItem('wogaer.theme') || '';
+        state.clientId = localStorage.getItem('wogaer.client_id') || '';
         if (token) {
           state.gitHubToken = token;
           state.isLoggedIn = true;
           invoke('set_github_token', { token }).catch(e => console.error(e));
+          loadUserInfo();
         }
         if (lang) {
           state.lang = lang;
@@ -876,17 +1878,172 @@
       }
     }
 
+    function renderUser() {
+      const avatar = document.getElementById('userAvatar');
+      const img = document.getElementById('avatarImg');
+      const placeholder = document.getElementById('avatarPlaceholder');
+      const menuName = document.getElementById('userMenuName');
+      const logoutBtn = document.getElementById('userLogout');
+
+      if (state.userInfo && state.userInfo.avatar_url) {
+        img.src = state.userInfo.avatar_url;
+        img.hidden = false;
+        placeholder.style.display = 'none';
+        avatar.title = state.userInfo.name || state.userInfo.login || state.userInfo.name;
+      } else {
+        img.hidden = true;
+        placeholder.style.display = '';
+        avatar.title = state.isLoggedIn ? '...' : t('clickToLogin');
+      }
+      menuName.textContent = state.userInfo
+        ? t('loggedInAs') + ' ' + (state.userInfo.name || state.userInfo.login)
+        : (state.isLoggedIn ? '...' : t('clickToLogin'));
+      logoutBtn.hidden = !state.isLoggedIn;
+      document.getElementById('userMenu').hidden = true;
+    }
+
+    async function loadUserInfo() {
+      if (!state.isLoggedIn) {
+        state.userInfo = null;
+        renderUser();
+        return;
+      }
+      try {
+        const info = await invokeWithSlowNotice('get_github_user', {}, 8000, 60000);
+        state.userInfo = info;
+      } catch (e) {
+        console.error('Load GitHub user failed:', e);
+        state.userInfo = null;
+        const msg = errorText(e);
+        if (/401|403|bad credentials|unauthorized/i.test(msg)) {
+          state.gitHubToken = null;
+          state.isLoggedIn = false;
+          localStorage.removeItem('wogaer.token');
+          invoke('github_logout').catch(err => console.error(err));
+          showStatus(t('sessionExpired'), 'error');
+          updateUI();
+        } else {
+          showStatus(t('userLoadFailed') + ': ' + msg, 'error');
+        }
+      }
+      renderUser();
+    }
+
+    async function logoutUser() {
+      try {
+        await invoke('github_logout');
+      } catch (e) {
+        console.error(e);
+      }
+      state.gitHubToken = null;
+      state.isLoggedIn = false;
+      state.userInfo = null;
+      localStorage.removeItem('wogaer.token');
+      persistSettings();
+      document.getElementById('settingsTokenInput').value = '';
+      document.getElementById('userMenu').hidden = true;
+      renderUser();
+      updateUI();
+      showStatus(t('loggedOut'), 'success');
+    }
+
+    const deviceState = { timer: null, code: null, clientId: '', interval: 5, verifyUrl: '' };
+
+    function stopDeviceFlow() {
+      if (deviceState.timer) {
+        clearTimeout(deviceState.timer);
+        deviceState.timer = null;
+      }
+      deviceState.code = null;
+      deviceState.clientId = '';
+      deviceState.verifyUrl = '';
+      document.getElementById('deviceFlow').hidden = true;
+      document.getElementById('deviceStatusText').textContent = '';
+    }
+
+    async function startDeviceFlow() {
+      const clientId = document.getElementById('settingsClientIdInput').value.trim();
+      if (!clientId) {
+        showSettingsError(t('clientIdRequired'));
+        return;
+      }
+      stopDeviceFlow();
+      document.getElementById('settingsError').hidden = true;
+      try {
+        const info = await invokeWithSlowNotice('device_flow_start', { clientId }, 8000, 30000);
+        state.clientId = clientId;
+        localStorage.setItem('wogaer.client_id', clientId);
+        deviceState.code = info.device_code;
+        deviceState.clientId = clientId;
+        deviceState.verifyUrl = info.verification_uri || 'https://github.com/login/device';
+        deviceState.interval = Math.max(5, info.interval || 5);
+        document.getElementById('deviceFlowText').textContent = t('deviceFlowHint');
+        document.getElementById('deviceCodeText').textContent = info.user_code || '';
+        document.getElementById('deviceFlow').hidden = false;
+        document.getElementById('deviceStatusText').textContent = t('deviceWaiting');
+        deviceState.timer = setTimeout(pollDeviceFlow, deviceState.interval * 1000);
+      } catch (e) {
+        showSettingsError(errorText(e));
+      }
+    }
+
+    async function pollDeviceFlow() {
+      deviceState.timer = null;
+      if (!deviceState.code || !deviceState.clientId) return;
+      try {
+        const res = await invokeWithSlowNotice('device_flow_poll', {
+          clientId: deviceState.clientId,
+          deviceCode: deviceState.code,
+        }, 8000, 30000);
+        if (res.status === 'ok') {
+          stopDeviceFlow();
+          document.getElementById('settingsError').hidden = true;
+          document.getElementById('settingsTokenInput').value = res.token;
+          const ok = await githubLogin(res.token);
+          if (ok) {
+            document.getElementById('settingsTokenInput').value = '';
+            persistSettings();
+            closeSettings();
+          }
+          return;
+        }
+        if (res.status === 'denied') {
+          stopDeviceFlow();
+          showSettingsError(t('deviceDenied'));
+          return;
+        }
+        if (res.status === 'expired') {
+          stopDeviceFlow();
+          showSettingsError(t('deviceExpired'));
+          return;
+        }
+        if (res.status === 'error') {
+          stopDeviceFlow();
+          showSettingsError(errorText(res.error || res));
+          return;
+        }
+        deviceState.interval = Math.max(5, res.interval || deviceState.interval);
+        document.getElementById('deviceStatusText').textContent = t('deviceWaiting');
+        deviceState.timer = setTimeout(pollDeviceFlow, deviceState.interval * 1000);
+      } catch (e) {
+        stopDeviceFlow();
+        showSettingsError(errorText(e));
+      }
+    }
+
     async function setLanguage(lang) {
       try {
         await invoke('set_language', { lang });
         state.lang = lang;
         persistSettings();
         updateUI();
+        showStatus(t('langSaved'), 'success');
       } catch (e) {
         console.error(e);
         state.lang = lang;
         persistSettings();
         updateUI();
+        showStatus(t('opFailed') + ': ' + errorText(e), 'error');
       }
     }
 
@@ -905,12 +2062,14 @@
           document.getElementById('dropStrong').textContent = '已选择文件夹';
           document.getElementById('dropHint').textContent = path;
           await analyzeProject(path);
+          showStatus(t('projectSelected'), 'success');
         } else {
           document.getElementById('dropHint').textContent = t('noFolder');
         }
       } catch (e) {
         console.error(e);
         document.getElementById('dropHint').textContent = '错误: ' + e;
+        showStatus(t('opFailed') + ': ' + errorText(e), 'error');
       }
     }
 
@@ -935,59 +2094,367 @@
               });
               console.log('Workflow generated:', workflowPath);
               document.getElementById('dropHint').textContent = path + ' (workflow: build.yml)';
+              showStatus(t('workflowGenerated'), 'success');
             } catch (e) {
               console.error('Generate workflow error:', e);
               document.getElementById('dropHint').textContent = path + ' (workflow 生成失败: ' + e + ')';
+              showStatus(t('workflowFailed') + ': ' + errorText(e), 'error');
             }
           } else {
             document.getElementById('dropHint').textContent = path + ' (未检测到支持的语言，跳过 workflow)';
+            showStatus(t('noLangSkipped'), 'info');
           }
         } else {
           document.getElementById('dropHint').textContent = path + ' (不是 Git 仓库，跳过 workflow)';
+          showStatus(t('notGitSkipped'), 'info');
         }
       } catch (e) {
         console.error(e);
         document.getElementById('dropHint').textContent = '分析失败: ' + e;
+        showStatus(t('opFailed') + ': ' + errorText(e), 'error');
       }
     }
 
     async function githubLogin(token) {
       try {
-        const ok = await invoke('github_login', { token });
+        const ok = await invokeWithSlowNotice('github_login', { token }, 8000, 60000);
         if (ok) {
           state.isLoggedIn = true;
           state.gitHubToken = token;
           persistSettings();
-          alert(t('loginSuccess'));
+          loadUserInfo();
+          showStatus(t('loginSuccess'), 'success');
           return true;
-        } else {
-          alert(t('loginFailed'));
-          return false;
         }
+        showSettingsError(t('loginError'));
+        showStatus(t('loginError'), 'error');
+        return false;
       } catch (e) {
-        alert(t('loginFailed') + ': ' + e);
+        console.error(e);
+        const msg = friendlyError(e);
+        showSettingsError(t('loginError') + ': ' + msg);
+        showStatus(t('loginError') + ': ' + msg, 'error');
         return false;
       }
     }
 
+    let pendingLoginToken = null;
+
+    function validateTokenInBackground(token) {
+      if (!token) return;
+      if (pendingLoginToken && pendingLoginToken === token) {
+        showStatus(t('loginVerifying'), 'info');
+        return;
+      }
+      pendingLoginToken = token;
+      showStatus(t('loginVerifying'), 'info');
+      invokeWithSlowNotice('github_login', { token }, 8000, 60000).then(ok => {
+        pendingLoginToken = null;
+        if (ok) {
+          state.isLoggedIn = true;
+          state.gitHubToken = token;
+          persistSettings();
+          loadUserInfo();
+          showStatus(t('loginSuccess'), 'success');
+        } else {
+          showStatus(t('loginError'), 'error');
+        }
+      }).catch(e => {
+        pendingLoginToken = null;
+        const msg = friendlyError(e);
+        showStatus(t('loginError') + ': ' + msg, 'error');
+      });
+    }
+
+    function showSettingsError(message) {
+      const el = document.getElementById('settingsError');
+      el.textContent = message;
+      el.hidden = false;
+    }
+
+    const BUILD_PHASES = [
+      { key: 'queued', labelKey: 'phaseQueued' },
+      { key: 'setup', labelKey: 'phaseSetup' },
+      { key: 'checkout', labelKey: 'phaseCheckout' },
+      { key: 'build', labelKey: 'phaseBuild' },
+      { key: 'upload', labelKey: 'phaseUpload' },
+    ];
+
+    function switchTab(name) {
+      state.activeTab = name;
+      document.getElementById('tabProject').classList.toggle('active', name === 'project');
+      document.getElementById('tabBuild').classList.toggle('active', name === 'build');
+      document.getElementById('tabHistory').classList.toggle('active', name === 'history');
+      document.getElementById('panelProject').hidden = name !== 'project';
+      document.getElementById('panelBuild').hidden = name !== 'build';
+      document.getElementById('panelHistory').hidden = name !== 'history';
+      if (name === 'build') renderBuildPanel();
+      if (name === 'history') refreshHistory();
+    }
+
+    function formatElapsed(seconds) {
+      const total = Math.max(0, Math.floor(seconds));
+      const h = Math.floor(total / 3600);
+      const m = Math.floor((total % 3600) / 60);
+      const s = total % 60;
+      const pad = n => String(n).padStart(2, '0');
+      return h > 0 ? h + ':' + pad(m) + ':' + pad(s) : pad(m) + ':' + pad(s);
+    }
+
+    function renderBuildMeta() {
+      const meta = document.getElementById('buildMeta');
+      if (!meta) return;
+      if (state.buildTriggering) {
+        meta.textContent = t('triggeringBuild');
+        return;
+      }
+      if (!state.lastRunId) {
+        meta.textContent = t('buildMetaIdle');
+        return;
+      }
+      let text = 'Run ' + state.lastRunId;
+      if (state.buildStartTime) {
+        text += ' · ' + t('elapsedPrefix') + ' ' + formatElapsed((Date.now() - state.buildStartTime) / 1000);
+      }
+      meta.textContent = text;
+    }
+
+    function startBuildElapsed() {
+      stopBuildElapsed();
+      state.buildStartTime = Date.now();
+      renderBuildMeta();
+      state.buildElapsedTimer = setInterval(renderBuildMeta, 1000);
+    }
+
+    function stopBuildElapsed() {
+      if (state.buildElapsedTimer) {
+        clearInterval(state.buildElapsedTimer);
+        state.buildElapsedTimer = null;
+      }
+    }
+
+    function logBuild(message, type) {
+      state.buildLogs.push({ time: new Date().toLocaleTimeString(), text: message, type: type || 'info' });
+      if (state.buildLogs.length > 8) state.buildLogs.shift();
+      renderBuildLogs();
+    }
+
+    function renderBuildLogs() {
+      const container = document.getElementById('buildLogs');
+      if (!container) return;
+      if (!state.buildLogs.length) {
+        container.innerHTML = '<div class="empty-hint">' + t('noBuildLogs') + '</div>';
+        return;
+      }
+      container.innerHTML = '';
+      state.buildLogs.forEach(log => {
+        const line = document.createElement('div');
+        line.className = 'log-line';
+        line.innerHTML = '<span class="log-dot ' + log.type + '"></span><span class="log-time">' + log.time + '</span><span>' + log.text + '</span>';
+        container.appendChild(line);
+      });
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function renderBuildBars(status, conclusion) {
+      const container = document.getElementById('buildBars');
+      if (!container) return;
+      const running = status === 'queued' || status === 'in_progress' || status === 'pending';
+      const succeeded = status === 'completed' && conclusion === 'success';
+      const failed = (status === 'completed' && conclusion !== 'success') || status === 'cancelled';
+      container.innerHTML = '';
+      BUILD_PHASES.forEach((phase, idx) => {
+        const row = document.createElement('div');
+        row.className = 'thermo-row';
+        const label = document.createElement('span');
+        label.className = 'thermo-label';
+        label.textContent = t(phase.labelKey);
+        const bulb = document.createElement('div');
+        bulb.className = 'thermo-bulb';
+        const track = document.createElement('div');
+        track.className = 'thermo-track';
+        const fill = document.createElement('div');
+        fill.className = 'thermo-fill';
+
+        if (running) {
+          const runIndex = (status === 'queued' || status === 'pending') ? 0 : 1;
+          if (idx < runIndex) {
+            fill.classList.add('done');
+            bulb.classList.add('lit');
+          } else if (idx === runIndex) {
+            fill.classList.add('run');
+            bulb.classList.add('lit');
+          }
+        } else if (succeeded) {
+          fill.classList.add('done');
+          bulb.classList.add('lit');
+        } else if (failed && idx === 0) {
+          fill.classList.add('error');
+          fill.style.width = '100%';
+          bulb.classList.add('error-lit');
+        }
+
+        track.appendChild(fill);
+        row.appendChild(label);
+        row.appendChild(bulb);
+        row.appendChild(track);
+        container.appendChild(row);
+      });
+    }
+
+    function renderBuildPanel() {
+      renderBuildMeta();
+      renderBuildLogs();
+      if (state.lastStatus) {
+        renderBuildBars(state.lastStatus, state.lastConclusion);
+      }
+    }
+
+    async function loadBuildArtifacts() {
+      const container = document.getElementById('buildArtifacts');
+      if (!container) return;
+      if (!state.lastRunId || !state.repoOwner || !state.repoName) return;
+      if (!state.isLoggedIn) {
+        container.innerHTML = '<div class="empty-hint">' + t('loginRequired') + '</div>';
+        return;
+      }
+      container.innerHTML = '<div class="empty-hint">加载中...</div>';
+      try {
+        const artifacts = await invokeWithSlowNotice('get_artifacts', {
+          runId: state.lastRunId,
+          repoOwner: state.repoOwner,
+          repoName: state.repoName,
+        }, 8000, 30000);
+        state.lastBuildArtifacts = artifacts;
+        renderArtifacts(
+          container,
+          { run_id: state.lastRunId, repo_name: state.repoOwner + '/' + state.repoName },
+          artifacts,
+          state.repoOwner,
+          state.repoName
+        );
+      } catch (e) {
+        container.innerHTML = '<div class="empty-hint">' + errorText(e) + '</div>';
+        showStatus(errorText(e), 'error');
+      }
+    }
+
+    async function refreshHistory() {
+      const tbody = document.getElementById('historyTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '<tr><td colspan="5" class="empty-hint">加载中...</td></tr>';
+      try {
+        const result = await invokeWithSlowNotice('get_build_history', { limit: 20 }, 8000, 30000);
+        state.historyRecords = result.records || [];
+        renderHistoryTable();
+      } catch (e) {
+        console.error(e);
+        tbody.innerHTML = '<tr><td colspan="5" class="empty-hint">' + t('historyLoadFailed') + ': ' + errorText(e) + '</td></tr>';
+        showStatus(t('historyLoadFailed') + ': ' + errorText(e), 'error');
+      }
+    }
+
+    function renderHistoryTable() {
+      const tbody = document.getElementById('historyTableBody');
+      const records = state.historyRecords;
+      if (!records.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="empty-hint">' + t('historyEmpty') + '</td></tr>';
+        return;
+      }
+      tbody.innerHTML = '';
+      records.forEach(record => {
+        const repo = record.repo_name || '-';
+        const statusClass = String(record.status || '').toLowerCase();
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${repo}</td>
+          <td>${record.created_at || '-'}</td>
+          <td><span class="status-chip status-${statusClass}">${record.status || '-'}</span></td>
+          <td id="count-${record.id}">-</td>
+          <td>
+            <div class="row-actions">
+              <button class="table-btn">${t('viewArtifacts')}</button>
+              <button class="table-btn">${t('openGithub')}</button>
+            </div>
+          </td>
+        `;
+        const [owner, name] = repo.split('/');
+        const btns = tr.querySelectorAll('.table-btn');
+        btns[0].addEventListener('click', () => toggleHistoryArtifacts(record, tr));
+        btns[1].addEventListener('click', () => {
+          const url = record.run_id
+            ? 'https://github.com/' + repo + '/actions/runs/' + record.run_id
+            : 'https://github.com/' + repo;
+          invoke('open_url', { url }).catch(e => showStatus(errorText(e), 'error'));
+        });
+        tbody.appendChild(tr);
+        if (record.run_id && owner && name && state.isLoggedIn) {
+          loadArtifactCount(record, owner, name);
+        }
+      });
+    }
+
+    async function loadArtifactCount(record, owner, name) {
+      try {
+        const artifacts = await invokeWithSlowNotice('get_artifacts', {
+          runId: record.run_id,
+          repoOwner: owner,
+          repoName: name,
+        }, 8000, 30000);
+        const cell = document.getElementById('count-' + record.id);
+        if (cell) cell.textContent = String(artifacts.length);
+      } catch (e) {
+        const cell = document.getElementById('count-' + record.id);
+        if (cell) cell.textContent = '-';
+      }
+    }
+
+    function toggleHistoryArtifacts(record, tr) {
+      const existing = document.getElementById('detail-' + record.id);
+      if (existing) {
+        existing.remove();
+        return;
+      }
+      const detail = document.createElement('tr');
+      detail.className = 'artifact-detail-row';
+      detail.id = 'detail-' + record.id;
+      detail.innerHTML = '<td colspan="5"><div class="artifact-list" id="artifacts-' + record.id + '"></div></td>';
+      tr.after(detail);
+      viewArtifacts(record);
+    }
+
     async function triggerBuild() {
       if (!state.isLoggedIn) {
-        alert(t('loginRequired'));
+        showStatus(t('loginRequired'), 'error');
         openSettings();
         return;
       }
       if (!state.projectPath) {
-        alert(t('projectRequired'));
+        showStatus(t('projectRequired'), 'error');
         return;
       }
       if (!state.repoOwner || !state.repoName) {
-        alert(t('repoInfoMissing'));
+        showStatus(t('repoInfoMissing'), 'error');
         return;
       }
       const btn = document.getElementById('btnBuild');
       const btnText = document.getElementById('btnBuildText');
       btn.disabled = true;
       btnText.textContent = t('triggering');
+      state.lastRunId = null;
+      state.lastStatus = 'queued';
+      state.lastConclusion = null;
+      state.buildTriggering = true;
+      state.buildStartTime = null;
+      state.buildLogs = [];
+      state.lastBuildArtifacts = [];
+      document.getElementById('buildStatus').hidden = false;
+      document.getElementById('buildStatusText').textContent = t('triggeringBuild');
+      document.getElementById('buildChip').textContent = t('triggering');
+      renderBuildBars('queued', null);
+      renderBuildMeta();
+      logBuild(t('triggeringBuild'), 'info');
+      switchTab('build');
       try {
         const request = {
           repo_owner: state.repoOwner,
@@ -997,17 +2464,27 @@
           inputs: {},
           project_path: state.projectPath,
         };
-        const result = await invoke('trigger_build', { request });
+        const result = await invokeWithSlowNotice('trigger_build', { request }, 10000, 90000);
         console.log(result);
+        state.buildTriggering = false;
         state.lastRunId = result.run_id;
+        state.lastStatus = result.status || 'queued';
+        state.lastConclusion = null;
         showBuildStatus(result);
         startStatusPolling();
-        document.getElementById('dropHint').textContent = t('buildTriggered') + ' · Run ID: ' + result.run_id;
+        startBuildElapsed();
+        logBuild(t('buildLogTriggered') + ' · Run ' + result.run_id, 'info');
+        showStatus(t('buildTriggered') + ' · Run ID: ' + result.run_id, 'success');
       } catch (e) {
         console.error(e);
+        state.buildTriggering = false;
+        stopBuildElapsed();
+        renderBuildMeta();
         document.getElementById('buildStatus').hidden = false;
-        document.getElementById('buildStatusText').textContent = t('buildFailed') + ': ' + e;
-        document.getElementById('buildStatusChip').textContent = t('statusFailed');
+        document.getElementById('buildStatusText').textContent = t('buildFailed') + ': ' + friendlyError(e);
+        document.getElementById('buildChip').textContent = t('statusFailed');
+        logBuild(t('buildLogFailed') + ': ' + friendlyError(e), 'error');
+        showStatus(friendlyError(e), 'error');
       } finally {
         btn.disabled = false;
         btnText.textContent = t('btnBuild');
@@ -1017,10 +2494,7 @@
     function showBuildStatus(info) {
       document.getElementById('buildStatus').hidden = false;
       document.getElementById('buildStatusText').textContent = t('statusLabel') + ': ' + info.status;
-      document.getElementById('buildStatusChip').textContent = info.status;
-      const runId = info.run_id || info.id || '';
-      const meta = 'Run ' + runId + (info.run_number ? ' / #' + info.run_number : '');
-      document.getElementById('buildStatusMeta').textContent = meta;
+      document.getElementById('buildChip').textContent = info.status;
       const link = document.getElementById('buildStatusLink');
       if (info.html_url) {
         link.href = info.html_url;
@@ -1028,11 +2502,20 @@
       } else {
         link.hidden = true;
       }
+      const prev = state.lastStatus;
+      state.lastStatus = info.status;
+      state.lastConclusion = info.conclusion || null;
+      renderBuildBars(info.status, info.conclusion);
+      renderBuildMeta();
+      if (prev !== info.status && info.status) {
+        logBuild(t('statusLabel') + ': ' + info.status, info.status === 'completed' ? 'success' : 'info');
+      }
     }
 
     function startStatusPolling() {
       stopStatusPolling();
-      state.statusTimer = setInterval(refreshBuildStatus, 5000);
+      state.pollErrors = 0;
+      state.statusTimer = setInterval(refreshBuildStatus, 4000);
     }
 
     function stopStatusPolling() {
@@ -1045,17 +2528,37 @@
     async function refreshBuildStatus() {
       if (!state.lastRunId || !state.repoOwner || !state.repoName) return;
       try {
-        const info = await invoke('get_build_status', {
+        const info = await invokeWithSlowNotice('get_build_status', {
           runId: state.lastRunId,
           repoOwner: state.repoOwner,
           repoName: state.repoName,
-        });
+        }, 10000, 45000);
+        state.pollErrors = 0;
         showBuildStatus(info);
-        if (info.status === 'completed' || info.status === 'cancelled' || info.conclusion) {
+        if (info.status === 'completed') {
           stopStatusPolling();
+          stopBuildElapsed();
+          renderBuildMeta();
+          const ok = info.conclusion === 'success';
+          logBuild(ok ? t('buildLogCompleted') : t('buildLogFailed') + ' · ' + (info.conclusion || ''), ok ? 'success' : 'error');
+          showStatus(t('buildCompleted') + (ok ? '' : ' · ' + (info.conclusion || '')), ok ? 'success' : 'error');
+          loadBuildArtifacts();
+        } else if (info.status === 'cancelled') {
+          stopStatusPolling();
+          stopBuildElapsed();
+          renderBuildMeta();
+          logBuild(t('buildLogCancelled'), 'error');
+          showStatus(t('buildCancelled'), 'error');
         }
       } catch (e) {
         console.error(e);
+        state.pollErrors = (state.pollErrors || 0) + 1;
+        if (state.pollErrors >= 3) {
+          stopStatusPolling();
+          stopBuildElapsed();
+          renderBuildMeta();
+          showStatus(friendlyError(e), 'error');
+        }
       }
     }
 
@@ -1069,53 +2572,6 @@
         unit++;
       }
       return value.toFixed(value >= 100 ? 0 : 1) + ' ' + units[unit];
-    }
-
-    async function fetchHistory() {
-      try {
-        const result = await invoke('get_build_history', { limit: 20 });
-        renderHistory(result.records || []);
-      } catch (e) {
-        console.error(e);
-        document.getElementById('historyList').innerHTML = '<div class="empty-hint">获取历史失败: ' + e + '</div>';
-      }
-    }
-
-    function openHistory() {
-      document.getElementById('historyOverlay').classList.add('active');
-      document.getElementById('historyList').innerHTML = '<div class="empty-hint">加载中...</div>';
-      fetchHistory();
-    }
-
-    function closeHistory() {
-      document.getElementById('historyOverlay').classList.remove('active');
-    }
-
-    function renderHistory(records) {
-      const list = document.getElementById('historyList');
-      if (!records.length) {
-        list.innerHTML = '<div class="empty-hint">' + t('historyEmpty') + '</div>';
-        return;
-      }
-      list.innerHTML = '';
-      records.forEach(record => {
-        const item = document.createElement('div');
-        item.className = 'history-item';
-        const runLabel = record.run_id ? ' · Run ' + record.run_id : '';
-        item.innerHTML = `
-          <div class="history-item-head">
-            <span class="history-item-repo">${record.repo_name || '-'}</span>
-            <span class="status-chip">${record.status || '-'}</span>
-          </div>
-          <div class="history-item-meta">${record.workflow_id || ''} · ${record.created_at || ''}${runLabel}</div>
-          <div class="history-item-actions">
-            <button class="artifacts-btn">${t('viewArtifacts')}</button>
-          </div>
-          <div class="artifact-list" id="artifacts-${record.id}"></div>
-        `;
-        item.querySelector('.artifacts-btn').addEventListener('click', () => viewArtifacts(record));
-        list.appendChild(item);
-      });
     }
 
     async function viewArtifacts(record) {
@@ -1132,14 +2588,15 @@
       }
       container.innerHTML = '<div class="empty-hint">加载中...</div>';
       try {
-        const artifacts = await invoke('get_artifacts', {
+        const artifacts = await invokeWithSlowNotice('get_artifacts', {
           runId: record.run_id,
           repoOwner: owner,
           repoName: name,
-        });
+        }, 8000, 30000);
         renderArtifacts(container, record, artifacts, owner, name);
       } catch (e) {
         container.innerHTML = '<div class="empty-hint">' + e + '</div>';
+        showStatus(errorText(e), 'error');
       }
     }
 
@@ -1167,7 +2624,7 @@
 
     async function downloadArtifact(record, artifact, owner, name, row) {
       if (!state.isLoggedIn) {
-        alert(t('loginRequired'));
+        showStatus(t('loginRequired'), 'error');
         return;
       }
       const btn = row.querySelector('.download-btn');
@@ -1194,57 +2651,95 @@
         statusEl.textContent = t('downloadComplete') + ': ' + saved;
         document.getElementById('dropHint').textContent = t('downloadComplete') + ': ' + saved;
         btn.textContent = t('done');
+        statusWithAction(t('downloadSaved') + ': ' + saved, 'success', t('openFolder'), () => {
+          invoke('reveal_path', { path: saved }).catch(err => {
+            showStatus(errorText(err), 'error');
+          });
+        });
       } catch (e) {
         console.error(e);
-        statusEl.textContent = t('downloadFailed') + ': ' + e;
+        statusEl.textContent = t('downloadFailed') + ': ' + errorText(e);
         btn.disabled = false;
+        showStatus(friendlyError(e), 'error');
       }
     }
 
     const settingsOverlay = document.getElementById('settingsOverlay');
-    const historyOverlay = document.getElementById('historyOverlay');
     const settingsTokenInput = document.getElementById('settingsTokenInput');
     const settingsLangSelect = document.getElementById('settingsLangSelect');
+    const settingsClientIdInput = document.getElementById('settingsClientIdInput');
 
     function openSettings() {
-      settingsTokenInput.value = state.gitHubToken || '';
+      settingsTokenInput.value = '';
       settingsLangSelect.value = state.lang;
+      settingsClientIdInput.value = state.clientId || '';
+      stopDeviceFlow();
+      document.getElementById('settingsError').hidden = true;
+      document.getElementById('settingsProgress').hidden = true;
+      document.getElementById('settingsSave').disabled = false;
+      const hint = document.getElementById('settingsLoginHint');
+      if (state.isLoggedIn) {
+        hint.hidden = false;
+        hint.textContent = state.userInfo
+          ? t('loggedInAs') + ' ' + (state.userInfo.name || state.userInfo.login)
+          : t('alreadyLoggedIn');
+      } else {
+        hint.hidden = true;
+      }
       settingsOverlay.classList.add('active');
     }
 
     function closeSettings() {
       const token = settingsTokenInput.value.trim();
       const lang = settingsLangSelect.value;
-      if (token !== state.gitHubToken || lang !== state.lang) {
-        state.gitHubToken = token;
-        state.isLoggedIn = !!token;
+      let changed = false;
+      if (lang !== state.lang) {
         state.lang = lang;
-        invoke('set_github_token', { token }).catch(e => console.error(e));
         invoke('set_language', { lang }).catch(e => console.error(e));
-        persistSettings();
-        updateUI();
+        changed = true;
       }
+      if (token && token !== state.gitHubToken) {
+        persistSettings(token);
+        validateTokenInBackground(token);
+        changed = true;
+      }
+      if (changed) {
+        updateUI();
+        showStatus(t('settingsAutoSaved'), 'success');
+      }
+      stopDeviceFlow();
+      document.getElementById('settingsProgress').hidden = true;
       settingsOverlay.classList.remove('active');
     }
 
-    async function saveSettings() {
+    function showSettingsProgress(message) {
+      document.getElementById('settingsProgressText').textContent = message || t('loggingIn');
+      document.getElementById('settingsProgress').hidden = false;
+    }
+
+    function hideSettingsProgress() {
+      document.getElementById('settingsProgress').hidden = true;
+    }
+
+    function saveSettings() {
       const token = settingsTokenInput.value.trim();
       const lang = settingsLangSelect.value;
-
-      if (token && token !== state.gitHubToken) {
-        const ok = await githubLogin(token);
-        if (!ok) return;
-      } else if (!token && state.gitHubToken) {
-        state.gitHubToken = null;
-        state.isLoggedIn = false;
-        invoke('github_logout').catch(e => console.error(e));
-      }
-
       if (lang !== state.lang) {
-        await setLanguage(lang);
+        state.lang = lang;
+        invoke('set_language', { lang }).catch(e => console.error(e));
+        updateUI();
       }
-
-      persistSettings();
+      if (token && token !== state.gitHubToken) {
+        persistSettings(token);
+        validateTokenInBackground(token);
+      } else {
+        persistSettings();
+        if (token && token === state.gitHubToken) {
+          loadUserInfo();
+        }
+      }
+      settingsTokenInput.value = '';
+      showStatus(t('settingsSaved'), 'success');
       closeSettings();
     }
 
@@ -1267,21 +2762,64 @@
     document.getElementById('themeToggle').addEventListener('click', toggleTheme);
     document.getElementById('btnPick').addEventListener('click', pickProject);
     document.getElementById('btnSettings').addEventListener('click', openSettings);
-    document.getElementById('btnHistory').addEventListener('click', openHistory);
+    document.getElementById('btnHistory').addEventListener('click', () => switchTab('history'));
     document.getElementById('btnBuild').addEventListener('click', triggerBuild);
+    document.getElementById('tabProject').addEventListener('click', () => switchTab('project'));
+    document.getElementById('tabBuild').addEventListener('click', () => switchTab('build'));
+    document.getElementById('tabHistory').addEventListener('click', () => switchTab('history'));
+    document.getElementById('tabRefresh').addEventListener('click', () => {
+      if (state.activeTab === 'build') refreshBuildStatus();
+      else if (state.activeTab === 'history') refreshHistory();
+      else showStatus(t('projectSelected'), 'info');
+    });
+    document.getElementById('userAvatar').addEventListener('click', () => {
+      const menu = document.getElementById('userMenu');
+      if (state.isLoggedIn) {
+        menu.hidden = !menu.hidden;
+      } else {
+        openSettings();
+        settingsTokenInput.focus();
+      }
+    });
+    document.getElementById('userLogout').addEventListener('click', logoutUser);
     document.getElementById('settingsClose').addEventListener('click', closeSettings);
     document.getElementById('settingsSave').addEventListener('click', saveSettings);
-    document.getElementById('historyClose').addEventListener('click', closeHistory);
+    document.getElementById('deviceLoginBtn').addEventListener('click', startDeviceFlow);
+    document.getElementById('generateTokenBtn').addEventListener('click', () => {
+      invoke('open_url', {
+        url: 'https://github.com/settings/tokens/new?scopes=workflow&description=woGAer',
+      }).catch(e => showStatus(errorText(e), 'error'));
+    });
+    document.getElementById('advancedToggle').addEventListener('click', () => {
+      const body = document.getElementById('advancedBody');
+      body.hidden = !body.hidden;
+      document.getElementById('advancedToggle').textContent = body.hidden ? t('advancedLogin') : t('advancedHide');
+    });
+    document.getElementById('openVerifyBtn').addEventListener('click', () => {
+      if (deviceState.verifyUrl) {
+        invoke('open_url', { url: deviceState.verifyUrl }).catch(e => {
+          showStatus(errorText(e), 'error');
+        });
+      }
+    });
+    document.getElementById('cancelDeviceBtn').addEventListener('click', () => {
+      stopDeviceFlow();
+      showStatus(t('deviceCancelled'), 'info');
+    });
 
     settingsOverlay.addEventListener('click', (e) => {
       if (e.target === settingsOverlay) closeSettings();
     });
 
-    historyOverlay.addEventListener('click', (e) => {
-      if (e.target === historyOverlay) closeHistory();
+    document.addEventListener('click', (e) => {
+      const menu = document.getElementById('userMenu');
+      if (!menu.hidden && !e.target.closest('#userMenu') && !e.target.closest('#userAvatar')) {
+        menu.hidden = true;
+      }
     });
 
     loadSettings();
+    renderUser();
     if (!localStorage.getItem('wogaer.lang')) {
       invoke('get_current_language').then(lang => {
         state.lang = lang || 'zh';

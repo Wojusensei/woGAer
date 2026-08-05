@@ -455,6 +455,30 @@ impl WorkflowClient {
         Ok(response.status().is_success())
     }
 
+    pub fn get_user(&self) -> Result<serde_json::Value> {
+        let response = self
+            .client
+            .get("https://api.github.com/user")
+            .header("Authorization", format!("Bearer {}", self.token))
+            .header("Accept", "application/vnd.github.v3+json")
+            .header("User-Agent", "woGAer")
+            .send()
+            .context("Failed to get GitHub user")?;
+
+        if !response.status().is_success() {
+            let status = response.status();
+            let text = response.text().unwrap_or_default();
+            return Err(anyhow!("Get user failed: {} - {}", status, text));
+        }
+
+        let data: serde_json::Value = response.json()?;
+        Ok(json!({
+            "login": data["login"].as_str().unwrap_or(""),
+            "name": data["name"].as_str().unwrap_or(""),
+            "avatar_url": data["avatar_url"].as_str().unwrap_or(""),
+        }))
+    }
+
     pub fn validate_repo_access(&self) -> Result<bool> {
         let url = self.base_url();
 
