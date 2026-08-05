@@ -1,8 +1,8 @@
 use std::path::PathBuf;
-use std::fs;
-use gix::{Repository, ThreadSafeRepository};
+use std::process::Command;
 use anyhow::{Result, Context, anyhow};
 use serde::{Serialize, Deserialize};
+use std::fs;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RepoStatus {
@@ -22,22 +22,35 @@ impl GitRepo {
         Self { path }
     }
 
-    pub fn open(&self) -> Result<Repository> {
-        Repository::open(&self.path)
-            .with_context(|| format!("Failed to open Git repository at {:?}", self.path))
+    fn run_git(&self, args: &[&str]) -> Result<String> {
+        let output = Command::new("git")
+            .current_dir(&self.path)
+            .args(args)
+            .output()
+            .context("Failed to execute git command")?;
+
+        if !output.status.success() {
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            return Err(anyhow!("Git command failed: {}", stderr));
+        }
+
+        Ok(String::from_utf8_lossy(&output.stdout).trim().to_string())
+    }
+
+    pub fn is_git_repo(&self) -> bool {
+        self.run_git(&["rev-parse", "--git-dir"]).is_ok()
     }
 
     pub fn init(&self) -> Result<()> {
-        if self.path.join(".git").exists() {
+        if self.is_git_repo() {
             return Ok(());
         }
-        Repository::init(&self.path)?;
+        self.run_git(&["init"])?;
         Ok(())
     }
 
     pub fn status(&self) -> Result<RepoStatus> {
-        let repo_result = Repository::open(&self.path);
-        if repo_result.is_err() {
+        if !self.is_git_repo() {
             return Ok(RepoStatus {
                 is_repo: false,
                 has_remote: false,
@@ -47,106 +60,51 @@ impl GitRepo {
             });
         }
 
-        let repo = repo_result.unwrap();
-        let head = repo.head();
-        let current_branch = head.ok().and_then(|h| h.shorthand().map(|s| s.to_string()));
-
-        let remote = repo.find_remote("origin").ok();
-        let remote_url = remote.as_ref().and_then(|r| r.url().map(|u| u.to_string()));
+        let branch = self.run_git(&["branch", "--show-current"]).ok();
+        let remote_url = self.run_git(&["remote", "get-url", "origin"]).ok();
         let has_remote = remote_url.is_some();
 
-        let mut is_clean = true;
-        if let Ok(mut statuses) = repo.status(gix::status::Platform::default()) {
-            if statuses.next().is_some() {
-                is_clean = false;
-            }
-        }
+        let status_output = self.run_git(&["status", "--porcelain"]).unwrap_or_default();
+        let is_clean = status_output.is_empty();
 
         Ok(RepoStatus {
             is_repo: true,
             has_remote,
             remote_url,
-            current_branch,
+            current_branch: branch,
             is_clean,
         })
     }
 
     pub fn add_all(&self) -> Result<()> {
-        let repo = self.open()?;
-        let mut index = repo.index()?;
-        index.add_all(["*"].iter(), gix::index::entry::Mode::default(), &mut |_| Ok(true))?;
-        index.write_changes()?;
+        self.run_git(&["add", "."])?;
         Ok(())
     }
 
     pub fn commit(&self, message: &str) -> Result<()> {
-        let repo = self.open()?;
-        let mut index = repo.index()?;
-        let tree_id = index.write_tree()?;
-        let tree = repo.find_object(tree_id)?.into_tree();
-
-        let head = repo.head();
-        let parent = if let Ok(head) = head {
-            if head.is_branch() {
-                let oid = head.target().context("No target")?;
-                Some(repo.find_object(oid)?.into_commit())
-            } else {
-                None
-            }
-        } else {
-            None
-        };
-
-        let signature = gix::actor::Signature::new_committer()?;
-        let parents = parent.as_ref().map(|p| vec![p]).unwrap_or_default();
-        let commit_id = repo.commit(
-            Some(message),
-            &signature,
-            &signature,
-            &tree,
-            parents.iter().map(|p| p.id).collect::<Vec<_>>().as_slice(),
-        )?;
-
-        let head_ref = repo.find_reference("HEAD")?;
-        if let Some(oid) = head_ref.target() {
-            if head_ref.is_branch() {
-                let mut refedit = repo.edit_reference(head_ref.name.as_ref())?;
-                refedit.set_target(commit_id, gix::refs::transaction::RefChange::Update {
-                    log: Some(gix::refs::transaction::LogChange {
-                        message: format!("commit: {}", message),
-                        mode: gix::refs::transaction::PreviousValue::MustExist,
-                    }),
-                })?;
-                refedit.commit()?;
-            }
-        }
-
+        self.run_git(&["commit", "-m", message])?;
         Ok(())
     }
 
     pub fn add_remote(&self, url: &str) -> Result<()> {
-        let repo = self.open()?;
-        if repo.find_remote("origin").is_ok() {
+        if self.run_git(&["remote", "get-url", "origin"]).is_ok() {
             return Ok(());
         }
-        repo.remote("origin", url)?;
+        self.run_git(&["remote", "add", "origin", url])?;
         Ok(())
     }
 
-    pub fn push(&self, branch: &str, remote: &str) -> Result<()> {
-        let repo = self.open()?;
-        let remote = repo.find_remote(remote)?;
-        let refspec = format!("refs/heads/{}:refs/heads/{}", branch, branch);
-        let mut connection = remote.connect(gix::protocol::transport::Direction::Push)?;
-        connection
-            .push(gix::refspec::RefSpec::from_bytes(refspec.as_bytes())?)
-            .execute()?;
+    pub fn push(&self, branch: &str) -> Result<()> {
+        self.run_git(&["push", "-u", "origin", branch])?;
         Ok(())
     }
 
     pub fn detect_language(&self) -> Vec<String> {
         let mut detected = Vec::new();
-        let entries = fs::read_dir(&self.path).unwrap_or_default();
+        let entries = match fs::read_dir(&self.path) {
+            Ok(e) => e,
+            Err(_) => return detected,
+        };
 
         for entry in entries.flatten() {
             let path = entry.path();
