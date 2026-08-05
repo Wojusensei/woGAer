@@ -126,3 +126,32 @@ impl GitRepo {
         detected
     }
 }
+
+pub fn parse_remote(remote_url: &str) -> (Option<String>, Option<String>) {
+    let trimmed = remote_url.trim().trim_end_matches(".git");
+    if trimmed.is_empty() {
+        return (None, None);
+    }
+
+    let path_part: String = if let Some(rest) = trimmed.strip_prefix("git@") {
+        rest.split(':').nth(1).unwrap_or(rest).to_string()
+    } else if let Some(rest) = trimmed.strip_prefix("ssh://") {
+        rest.split('/').skip(1).collect::<Vec<_>>().join("/")
+    } else {
+        trimmed.to_string()
+    };
+
+    let mut parts: Vec<&str> = path_part
+        .trim_end_matches('/')
+        .split('/')
+        .filter(|s| !s.is_empty())
+        .collect();
+
+    if parts.len() >= 2 {
+        let repo = parts.pop().unwrap_or("").to_string();
+        let owner = parts.pop().unwrap_or("").to_string();
+        (Some(owner), Some(repo))
+    } else {
+        (None, None)
+    }
+}

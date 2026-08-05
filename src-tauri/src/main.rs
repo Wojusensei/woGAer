@@ -13,12 +13,12 @@ use std::path::PathBuf;
 use std::sync::Mutex;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use tauri::{Manager, State, Window, Emitter};
+use tauri::{AppHandle, Emitter, Manager, State, Window};
 use tauri_plugin_dialog::DialogExt;
 
 use db::{Database, BuildRecord};
 use git::GitRepo;
-use actions::workflow::{WorkflowClient, WorkflowDispatchOptions};
+use actions::workflow::{WorkflowClient, WorkflowDispatchOptions, WorkflowRun};
 use downloader::Downloader;
 use i18n::I18n;
 
@@ -45,6 +45,8 @@ pub struct ProjectAnalysis {
     pub is_git_repo: bool,
     pub has_remote: bool,
     pub remote_url: Option<String>,
+    pub repo_owner: Option<String>,
+    pub repo_name: Option<String>,
     pub current_branch: Option<String>,
     pub is_clean: bool,
     pub languages: Vec<String>,
@@ -79,6 +81,7 @@ pub struct HistoryResponse {
 pub struct DownloadRequest {
     pub artifact_ids: Vec<i64>,
     pub dest_dir: String,
+    pub run_id: i64,
     pub repo_owner: String,
     pub repo_name: String,
 }
@@ -112,11 +115,18 @@ fn analyze_project(project_path: String, state: State<AppState>) -> Result<Proje
     let repo = GitRepo::new(path.clone());
     let status = repo.status().map_err(|e| e.to_string())?;
     let languages = repo.detect_language();
+    let (repo_owner, repo_name) = status
+        .remote_url
+        .as_deref()
+        .map(git::repo::parse_remote)
+        .unwrap_or((None, None));
 
     Ok(ProjectAnalysis {
         is_git_repo: status.is_repo,
         has_remote: status.has_remote,
         remote_url: status.remote_url,
+        repo_owner,
+        repo_name,
         current_branch: status.current_branch,
         is_clean: status.is_clean,
         languages,
@@ -125,9 +135,12 @@ fn analyze_project(project_path: String, state: State<AppState>) -> Result<Proje
 }
 
 #[tauri::command]
-fn github_login(token: String, state: State<AppState>) -> Result<bool, String> {
-    let client = WorkflowClient::new(token.clone(), "".to_string(), "".to_string());
-    let valid = client.validate_token().map_err(|e| e.to_string())?;
+async fn github_login(token: String, state: State<'_, AppState>) -> Result<bool, String> {
+    let client = WorkflowClient::new(token.clone(), String::new(), String::new());
+    let valid = tauri::async_runtime::spawn_blocking(move || client.validate_token())
+        .await
+        .map_err(|e| e.to_string())?
+        .map_err(|e| e.to_string())?;
 
     if valid {
         let mut token_guard = state.github_token.lock().unwrap();
@@ -143,6 +156,17 @@ fn github_login(token: String, state: State<AppState>) -> Result<bool, String> {
 fn github_logout(state: State<AppState>) -> Result<(), String> {
     let mut token_guard = state.github_token.lock().unwrap();
     *token_guard = None;
+    Ok(())
+}
+
+#[tauri::command]
+fn set_github_token(token: String, state: State<AppState>) -> Result<(), String> {
+    let mut token_guard = state.github_token.lock().unwrap();
+    *token_guard = if token.trim().is_empty() {
+        None
+    } else {
+        Some(token.trim().to_string())
+    };
     Ok(())
 }
 
@@ -172,12 +196,8 @@ fn get_string(key: String, state: State<AppState>) -> Result<String, String> {
 }
 
 #[tauri::command]
-fn trigger_build(
-    request: BuildRequest,
-    state: State<AppState>,
-) -> Result<BuildResponse, String> {
-    let token_guard = state.github_token.lock().unwrap();
-    let token = token_guard.as_ref().ok_or_else(|| {
+async fn trigger_build(request: BuildRequest, state: State<'_, AppState>) -> Result<BuildResponse, String> {
+    let token = state.github_token.lock().unwrap().clone().ok_or_else(|| {
         let i18n = state.i18n.lock().unwrap();
         i18n.get("not_logged_in")
     })?;
@@ -187,6 +207,7 @@ fn trigger_build(
         request.repo_owner.clone(),
         request.repo_name.clone(),
     );
+    let workflow_id = request.workflow_id.clone();
 
     let mut inputs = std::collections::HashMap::new();
     if let Some(obj) = request.inputs.as_object() {
@@ -202,38 +223,60 @@ fn trigger_build(
         inputs,
     };
 
-    client.dispatch_workflow(&request.workflow_id, &options)
-        .map_err(|e| e.to_string())?;
+    let run = tauri::async_runtime::spawn_blocking(move || -> Result<Option<WorkflowRun>, String> {
+        client
+            .dispatch_workflow(&workflow_id, &options)
+            .map_err(|e| e.to_string())?;
 
-    std::thread::sleep(std::time::Duration::from_secs(2));
-    let runs = client.list_runs(Some(&request.workflow_id), 1)
-        .map_err(|e| e.to_string())?;
+        std::thread::sleep(std::time::Duration::from_secs(2));
+        let runs = client
+            .list_runs(Some(&workflow_id), 1)
+            .map_err(|e| e.to_string())?;
+        Ok(runs.into_iter().next())
+    })
+    .await
+    .map_err(|e| e.to_string())?
+    .map_err(|e| e.to_string())?;
 
-    if let Some(run) = runs.first() {
-        if let Some(db) = state.db.lock().unwrap().as_ref() {
-            let record = BuildRecord {
-                id: 0,
-                repo_name: format!("{}/{}", request.repo_owner, request.repo_name),
-                workflow_id: request.workflow_id.clone(),
-                status: run.status.clone(),
-                created_at: run.created_at.clone(),
-                artifact_url: None,
-                trigger_type: "manual".to_string(),
-                platform: std::env::consts::OS.to_string(),
-            };
-            let _ = db.insert_record(&record);
+    let run = match run {
+        Some(run) => run,
+        None => {
+            let i18n = state.i18n.lock().unwrap();
+            return Err(i18n.get("build_failed"));
         }
+    };
 
-        Ok(BuildResponse {
+    if let Some(db) = state.db.lock().unwrap().as_ref() {
+        let record = BuildRecord {
+            id: 0,
             run_id: run.id,
-            run_number: run.run_number,
+            repo_name: format!("{}/{}", request.repo_owner, request.repo_name),
+            workflow_id: request.workflow_id.clone(),
             status: run.status.clone(),
-            html_url: run.html_url.clone(),
-        })
-    } else {
-        let i18n = state.i18n.lock().unwrap();
-        Err(i18n.get("build_failed"))
+            created_at: run.created_at.clone(),
+            artifact_url: None,
+            trigger_type: "manual".to_string(),
+            platform: std::env::consts::OS.to_string(),
+        };
+        let _ = db.insert_record(&record);
     }
+
+    Ok(BuildResponse {
+        run_id: run.id,
+        run_number: run.run_number,
+        status: run.status.clone(),
+        html_url: run.html_url.clone(),
+    })
+}
+
+#[tauri::command]
+fn get_download_dir(app: AppHandle) -> Result<String, String> {
+    let base = app
+        .path()
+        .download_dir()
+        .or_else(|_| app.path().app_data_dir())
+        .map_err(|_| "无法获取下载目录".to_string())?;
+    Ok(base.join("woGAer").to_string_lossy().to_string())
 }
 
 #[tauri::command]
@@ -258,20 +301,24 @@ fn get_build_history(
 }
 
 #[tauri::command]
-fn get_build_status(
+async fn get_build_status(
     run_id: i64,
     repo_owner: String,
     repo_name: String,
-    state: State<AppState>,
+    state: State<'_, AppState>,
 ) -> Result<serde_json::Value, String> {
-    let token_guard = state.github_token.lock().unwrap();
-    let token = token_guard.as_ref().ok_or_else(|| {
+    let token = state.github_token.lock().unwrap().clone().ok_or_else(|| {
         let i18n = state.i18n.lock().unwrap();
         i18n.get("not_logged_in")
     })?;
 
-    let client = WorkflowClient::new(token.clone(), repo_owner, repo_name);
-    let run = client.get_run_status(run_id).map_err(|e| e.to_string())?;
+    let run = tauri::async_runtime::spawn_blocking(move || {
+        let client = WorkflowClient::new(token, repo_owner, repo_name);
+        client.get_run_status(run_id)
+    })
+    .await
+    .map_err(|e| e.to_string())?
+    .map_err(|e| e.to_string())?;
 
     Ok(json!({
         "id": run.id,
@@ -283,20 +330,24 @@ fn get_build_status(
 }
 
 #[tauri::command]
-fn get_artifacts(
+async fn get_artifacts(
     run_id: i64,
     repo_owner: String,
     repo_name: String,
-    state: State<AppState>,
+    state: State<'_, AppState>,
 ) -> Result<Vec<serde_json::Value>, String> {
-    let token_guard = state.github_token.lock().unwrap();
-    let token = token_guard.as_ref().ok_or_else(|| {
+    let token = state.github_token.lock().unwrap().clone().ok_or_else(|| {
         let i18n = state.i18n.lock().unwrap();
         i18n.get("not_logged_in")
     })?;
 
-    let client = WorkflowClient::new(token.clone(), repo_owner, repo_name);
-    let artifacts = client.list_artifacts(run_id).map_err(|e| e.to_string())?;
+    let artifacts = tauri::async_runtime::spawn_blocking(move || {
+        let client = WorkflowClient::new(token, repo_owner, repo_name);
+        client.list_artifacts(run_id)
+    })
+    .await
+    .map_err(|e| e.to_string())?
+    .map_err(|e| e.to_string())?;
 
     Ok(artifacts
         .into_iter()
@@ -313,13 +364,12 @@ fn get_artifacts(
 }
 
 #[tauri::command]
-fn download_artifacts(
+async fn download_artifacts(
     request: DownloadRequest,
-    state: State<AppState>,
+    state: State<'_, AppState>,
     window: Window,
 ) -> Result<Vec<String>, String> {
-    let token_guard = state.github_token.lock().unwrap();
-    let token = token_guard.as_ref().ok_or_else(|| {
+    let token = state.github_token.lock().unwrap().clone().ok_or_else(|| {
         let i18n = state.i18n.lock().unwrap();
         i18n.get("not_logged_in")
     })?;
@@ -329,45 +379,44 @@ fn download_artifacts(
         std::fs::create_dir_all(&dest_dir).map_err(|e| e.to_string())?;
     }
 
-    let downloader = Downloader::new();
-    let client = WorkflowClient::new(
-        token.clone(),
-        request.repo_owner.clone(),
-        request.repo_name.clone(),
-    );
+    tauri::async_runtime::spawn_blocking(move || {
+        let downloader = Downloader::new();
+        let client = WorkflowClient::new(token.clone(), request.repo_owner, request.repo_name);
+        let mut downloaded_files = Vec::new();
 
-    let mut downloaded_files = Vec::new();
+        for artifact_id in request.artifact_ids {
+            let artifacts = client.list_artifacts(request.run_id).map_err(|e| e.to_string())?;
+            let artifact = artifacts
+                .iter()
+                .find(|a| a.id == artifact_id)
+                .ok_or_else(|| format!("找不到产物 ID: {}", artifact_id))?;
 
-    for artifact_id in request.artifact_ids {
-        let artifacts = client.list_artifacts(0).map_err(|e| e.to_string())?;
-        let artifact = artifacts
-            .iter()
-            .find(|a| a.id == artifact_id)
-            .ok_or_else(|| format!("找不到产物 ID: {}", artifact_id))?;
+            let filename = format!("{}.zip", artifact.name);
+            let dest_path = dest_dir.join(&filename);
 
-        let filename = format!("{}.zip", artifact.name);
-        let dest_path = dest_dir.join(&filename);
+            downloader.download_with_callback(
+                &artifact.download_url,
+                &dest_dir,
+                Some(&filename),
+                Some(&token),
+                |progress, downloaded, total| {
+                    let _ = window.emit("download-progress", json!({
+                        "artifact_id": artifact_id,
+                        "progress": progress,
+                        "downloaded": downloaded,
+                        "total": total,
+                    }));
+                    true
+                },
+            ).map_err(|e| e.to_string())?;
 
-        let _ = downloader.download_with_callback(
-            &artifact.download_url,
-            &dest_dir,
-            Some(&filename),
-            Some(token),
-            |progress, downloaded, total| {
-                let _ = window.emit("download-progress", json!({
-                    "artifact_id": artifact_id,
-                    "progress": progress,
-                    "downloaded": downloaded,
-                    "total": total,
-                }));
-                true
-            },
-        ).map_err(|e| e.to_string())?;
+            downloaded_files.push(dest_path.to_string_lossy().to_string());
+        }
 
-        downloaded_files.push(dest_path.to_string_lossy().to_string());
-    }
-
-    Ok(downloaded_files)
+        Ok(downloaded_files)
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[tauri::command]
@@ -382,6 +431,26 @@ fn get_supported_languages() -> Result<Vec<String>, String> {
         "C++".to_string(),
         "Docker".to_string(),
     ])
+}
+
+#[tauri::command]
+async fn generate_workflow(
+    project_path: String,
+    language: String,
+    project_name: String,
+) -> Result<String, String> {
+    use std::fs;
+    use std::path::PathBuf;
+
+    let path = PathBuf::from(&project_path);
+    let workflow_dir = path.join(".github").join("workflows");
+    fs::create_dir_all(&workflow_dir).map_err(|e| e.to_string())?;
+
+    let content = actions::workflow::WorkflowTemplate::generate(&language, &project_name);
+    let file_path = workflow_dir.join("build.yml");
+    fs::write(&file_path, content).map_err(|e| e.to_string())?;
+
+    Ok(file_path.to_string_lossy().to_string())
 }
 
 fn main() {
@@ -416,6 +485,9 @@ fn main() {
             get_artifacts,
             download_artifacts,
             get_supported_languages,
+            generate_workflow,
+            set_github_token,
+            get_download_dir,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

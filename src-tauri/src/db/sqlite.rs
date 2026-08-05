@@ -6,6 +6,7 @@ use serde::{Serialize, Deserialize};
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct BuildRecord {
     pub id: i64,
+    pub run_id: i64,
     pub repo_name: String,
     pub workflow_id: String,
     pub status: String,
@@ -44,6 +45,23 @@ impl Database {
             "CREATE INDEX IF NOT EXISTS idx_created_at ON build_records(created_at DESC)",
             [],
         )?;
+
+        let has_run_id = {
+            let mut stmt = conn.prepare("PRAGMA table_info(build_records)")?;
+            let columns = stmt.query_map([], |row| row.get::<_, String>(1))?;
+            let mut found = false;
+            for name in columns {
+                if name? == "run_id" {
+                    found = true;
+                    break;
+                }
+            }
+            found
+        };
+        if !has_run_id {
+            conn.execute("ALTER TABLE build_records ADD COLUMN run_id INTEGER DEFAULT 0", [])?;
+        }
+
         Ok(Database {
             conn: Mutex::new(conn),
         })
@@ -53,9 +71,10 @@ impl Database {
         let conn = self.conn.lock().unwrap();
         conn.execute(
             "INSERT INTO build_records 
-             (repo_name, workflow_id, status, created_at, artifact_url, trigger_type, platform) 
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
+             (run_id, repo_name, workflow_id, status, created_at, artifact_url, trigger_type, platform) 
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)",
             params![
+                record.run_id,
                 record.repo_name,
                 record.workflow_id,
                 record.status,
@@ -80,20 +99,21 @@ impl Database {
     pub fn get_record_by_id(&self, id: i64) -> Result<Option<BuildRecord>> {
         let conn = self.conn.lock().unwrap();
         let mut stmt = conn.prepare(
-            "SELECT id, repo_name, workflow_id, status, created_at, artifact_url, trigger_type, platform 
+            "SELECT id, run_id, repo_name, workflow_id, status, created_at, artifact_url, trigger_type, platform 
              FROM build_records WHERE id = ?1"
         )?;
         let mut rows = stmt.query(params![id])?;
         if let Some(row) = rows.next()? {
             Ok(Some(BuildRecord {
                 id: row.get(0)?,
-                repo_name: row.get(1)?,
-                workflow_id: row.get(2)?,
-                status: row.get(3)?,
-                created_at: row.get(4)?,
-                artifact_url: row.get(5)?,
-                trigger_type: row.get(6)?,
-                platform: row.get(7)?,
+                run_id: row.get(1)?,
+                repo_name: row.get(2)?,
+                workflow_id: row.get(3)?,
+                status: row.get(4)?,
+                created_at: row.get(5)?,
+                artifact_url: row.get(6)?,
+                trigger_type: row.get(7)?,
+                platform: row.get(8)?,
             }))
         } else {
             Ok(None)
@@ -103,19 +123,20 @@ impl Database {
     pub fn get_all_records(&self, limit: usize) -> Result<Vec<BuildRecord>> {
         let conn = self.conn.lock().unwrap();
         let mut stmt = conn.prepare(
-            "SELECT id, repo_name, workflow_id, status, created_at, artifact_url, trigger_type, platform 
+            "SELECT id, run_id, repo_name, workflow_id, status, created_at, artifact_url, trigger_type, platform 
              FROM build_records ORDER BY created_at DESC LIMIT ?1"
         )?;
         let rows = stmt.query_map(params![limit as i64], |row| {
             Ok(BuildRecord {
                 id: row.get(0)?,
-                repo_name: row.get(1)?,
-                workflow_id: row.get(2)?,
-                status: row.get(3)?,
-                created_at: row.get(4)?,
-                artifact_url: row.get(5)?,
-                trigger_type: row.get(6)?,
-                platform: row.get(7)?,
+                run_id: row.get(1)?,
+                repo_name: row.get(2)?,
+                workflow_id: row.get(3)?,
+                status: row.get(4)?,
+                created_at: row.get(5)?,
+                artifact_url: row.get(6)?,
+                trigger_type: row.get(7)?,
+                platform: row.get(8)?,
             })
         })?;
         rows.collect::<Result<Vec<_>, _>>()
@@ -124,19 +145,20 @@ impl Database {
     pub fn get_records_by_repo(&self, repo_name: &str, limit: usize) -> Result<Vec<BuildRecord>> {
         let conn = self.conn.lock().unwrap();
         let mut stmt = conn.prepare(
-            "SELECT id, repo_name, workflow_id, status, created_at, artifact_url, trigger_type, platform 
+            "SELECT id, run_id, repo_name, workflow_id, status, created_at, artifact_url, trigger_type, platform 
              FROM build_records WHERE repo_name = ?1 ORDER BY created_at DESC LIMIT ?2"
         )?;
         let rows = stmt.query_map(params![repo_name, limit as i64], |row| {
             Ok(BuildRecord {
                 id: row.get(0)?,
-                repo_name: row.get(1)?,
-                workflow_id: row.get(2)?,
-                status: row.get(3)?,
-                created_at: row.get(4)?,
-                artifact_url: row.get(5)?,
-                trigger_type: row.get(6)?,
-                platform: row.get(7)?,
+                run_id: row.get(1)?,
+                repo_name: row.get(2)?,
+                workflow_id: row.get(3)?,
+                status: row.get(4)?,
+                created_at: row.get(5)?,
+                artifact_url: row.get(6)?,
+                trigger_type: row.get(7)?,
+                platform: row.get(8)?,
             })
         })?;
         rows.collect::<Result<Vec<_>, _>>()

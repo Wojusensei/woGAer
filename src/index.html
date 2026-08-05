@@ -425,6 +425,165 @@
     .settings-actions .primary:hover {
       background: rgba(60, 120, 220, 0.8);
     }
+    .build-status {
+      position: relative;
+      z-index: 2;
+      margin-top: 16px;
+      padding: 16px 20px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      font-size: 13px;
+      line-height: 1.7;
+      color: rgba(0, 0, 0, 0.55);
+      transition: background 0.3s, border-color 0.3s, color 0.6s;
+    }
+    body.dark .build-status {
+      background: rgba(255, 255, 255, 0.03);
+      border-color: rgba(255, 255, 255, 0.07);
+      color: rgba(255, 255, 255, 0.45);
+    }
+    .build-status[hidden] {
+      display: none;
+    }
+    .build-status-title {
+      font-weight: 500;
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+    .build-status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .build-status-row a {
+      color: rgba(60, 120, 220, 0.9);
+      pointer-events: auto;
+    }
+    body.dark .build-status-row a {
+      color: rgba(140, 190, 255, 0.9);
+    }
+    .status-chip {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 100px;
+      font-size: 12px;
+      background: rgba(60, 120, 220, 0.12);
+      border: 1px solid rgba(60, 120, 220, 0.18);
+    }
+    .history-panel {
+      max-width: 640px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 55vh;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .history-item {
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    body.light .history-item {
+      background: rgba(0, 0, 0, 0.03);
+      border-color: rgba(0, 0, 0, 0.08);
+    }
+    .history-item-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+    }
+    .history-item-repo {
+      font-weight: 500;
+      font-size: 14px;
+    }
+    .history-item-meta {
+      font-size: 12px;
+      opacity: 0.7;
+    }
+    .history-item-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .history-item-actions button,
+    .artifact-row button {
+      padding: 6px 14px;
+      border: none;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      background: rgba(60, 120, 220, 0.15);
+      color: inherit;
+    }
+    .history-item-actions button:hover,
+    .artifact-row button:hover {
+      background: rgba(60, 120, 220, 0.28);
+    }
+    .history-item-actions button:disabled,
+    .artifact-row button:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+    .artifact-list {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 10px;
+    }
+    body.light .artifact-list {
+      border-top-color: rgba(0, 0, 0, 0.08);
+    }
+    .artifact-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 12px;
+      flex-wrap: wrap;
+    }
+    .artifact-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+    .progress-track {
+      width: 140px;
+      height: 6px;
+      border-radius: 100px;
+      background: rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+    }
+    body.light .progress-track {
+      background: rgba(0, 0, 0, 0.08);
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, rgba(90, 150, 255, 0.9), rgba(140, 190, 255, 0.9));
+      transition: width 0.2s;
+    }
+    .empty-hint {
+      text-align: center;
+      opacity: 0.6;
+      padding: 18px 0;
+      font-size: 13px;
+    }
     @media (max-width: 600px) {
       .glass {
         padding: 32px 20px;
@@ -459,6 +618,13 @@
       .settings-panel {
         padding: 28px 20px;
       }
+      .build-status {
+        margin-top: 12px;
+        padding: 12px 14px;
+      }
+      .history-panel {
+        padding: 24px 18px;
+      }
     }
   </style>
 </head>
@@ -485,10 +651,25 @@
           <span class="btn-text" id="btnHistoryText">历史</span>
           <span class="btn-glass"></span>
         </button>
+        <button class="btn" id="btnBuild">
+          <span class="btn-text" id="btnBuildText">触发构建</span>
+          <span class="btn-glass"></span>
+        </button>
       </div>
       <div class="drop-zone" id="dropZone">
         <strong id="dropStrong">点击「选择项目」按钮浏览文件夹</strong><br />
         <span id="dropHint">支持 Git 仓库自动检测</span>
+      </div>
+      <div class="build-status" id="buildStatus" hidden>
+        <div class="build-status-title" id="buildStatusTitle">构建状态</div>
+        <div class="build-status-row">
+          <span id="buildStatusText">-</span>
+          <span class="status-chip" id="buildStatusChip">-</span>
+        </div>
+        <div class="build-status-row">
+          <span id="buildStatusMeta"></span>
+          <a id="buildStatusLink" href="#" target="_blank" hidden>查看 GitHub</a>
+        </div>
       </div>
     </div>
   </div>
@@ -517,6 +698,15 @@
       </div>
     </div>
   </div>
+  <div class="settings-overlay" id="historyOverlay">
+    <div class="settings-panel history-panel">
+      <h2 id="historyTitle">历史记录</h2>
+      <div class="history-list" id="historyList"></div>
+      <div class="settings-actions">
+        <button id="historyClose">关闭</button>
+      </div>
+    </div>
+  </div>
   <script type="module">
     import { invoke } from '@tauri-apps/api/core';
     import { listen } from '@tauri-apps/api/event';
@@ -526,8 +716,15 @@
       lang: 'zh',
       isDark: false,
       projectPath: null,
+      projectInfo: null,
+      repoOwner: null,
+      repoName: null,
+      branch: 'main',
       gitHubToken: null,
       isLoggedIn: false,
+      lastRunId: null,
+      statusTimer: null,
+      downloadDir: null,
     };
 
     const translations = {
@@ -554,6 +751,21 @@
         buildFailed: '构建失败',
         historyTitle: '历史记录',
         historyEmpty: '暂无记录',
+        btnBuild: '触发构建',
+        buildStatusTitle: '构建状态',
+        statusLabel: '状态',
+        viewArtifacts: '查看产物',
+        noArtifacts: '无产物',
+        download: '下载',
+        done: '完成',
+        downloadStarted: '下载中...',
+        downloadComplete: '下载完成',
+        downloadFailed: '下载失败',
+        triggering: '触发中...',
+        statusFailed: '失败',
+        loginRequired: '请先登录 GitHub',
+        projectRequired: '请先选择一个项目文件夹',
+        repoInfoMissing: '无法从 Git remote 解析仓库信息',
       },
       en: {
         title: 'woGAer',
@@ -578,6 +790,21 @@
         buildFailed: 'Build failed',
         historyTitle: 'History',
         historyEmpty: 'No records',
+        btnBuild: 'Trigger Build',
+        buildStatusTitle: 'Build Status',
+        statusLabel: 'Status',
+        viewArtifacts: 'View Artifacts',
+        noArtifacts: 'No artifacts',
+        download: 'Download',
+        done: 'Done',
+        downloadStarted: 'Downloading...',
+        downloadComplete: 'Download complete',
+        downloadFailed: 'Download failed',
+        triggering: 'Triggering...',
+        statusFailed: 'Failed',
+        loginRequired: 'Please log in to GitHub first',
+        projectRequired: 'Please select a project folder first',
+        repoInfoMissing: 'Could not parse repository info from Git remote',
       }
     };
 
@@ -591,6 +818,7 @@
       document.getElementById('btnPickText').textContent = t('btnPick');
       document.getElementById('btnSettingsText').textContent = t('btnSettings');
       document.getElementById('btnHistoryText').textContent = t('btnHistory');
+      document.getElementById('btnBuildText').textContent = t('btnBuild');
       document.getElementById('dropStrong').textContent = t('dropStrong');
       document.getElementById('dropHint').textContent = t('dropHint');
       document.getElementById('descLine').textContent = t('desc');
@@ -605,20 +833,59 @@
       document.getElementById('settingsSave').textContent = t('save');
       document.getElementById('settingsTokenInput').placeholder = t('tokenPlaceholder');
       document.getElementById('settingsLangSelect').value = state.lang;
+      document.getElementById('buildStatusTitle').textContent = t('buildStatusTitle');
+      document.getElementById('historyTitle').textContent = t('historyTitle');
+      document.getElementById('historyClose').textContent = t('close');
     }
 
     getVersion().then(ver => {
       document.getElementById('versionLine').textContent = t('versionPrefix') + ver;
     }).catch(e => console.error(e));
 
+    function persistSettings() {
+      try {
+        localStorage.setItem('wogaer.token', state.gitHubToken || '');
+        localStorage.setItem('wogaer.lang', state.lang);
+        localStorage.setItem('wogaer.theme', state.isDark ? 'dark' : 'light');
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function loadSettings() {
+      try {
+        const token = localStorage.getItem('wogaer.token') || '';
+        const lang = localStorage.getItem('wogaer.lang') || '';
+        const theme = localStorage.getItem('wogaer.theme') || '';
+        if (token) {
+          state.gitHubToken = token;
+          state.isLoggedIn = true;
+          invoke('set_github_token', { token }).catch(e => console.error(e));
+        }
+        if (lang) {
+          state.lang = lang;
+          invoke('set_language', { lang }).catch(e => console.error(e));
+        }
+        if (theme === 'dark') {
+          state.isDark = true;
+          document.body.classList.add('dark');
+          document.getElementById('themeToggle').textContent = '☀';
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
     async function setLanguage(lang) {
       try {
         await invoke('set_language', { lang });
         state.lang = lang;
+        persistSettings();
         updateUI();
       } catch (e) {
         console.error(e);
         state.lang = lang;
+        persistSettings();
         updateUI();
       }
     }
@@ -627,6 +894,7 @@
       state.isDark = !state.isDark;
       document.body.classList.toggle('dark', state.isDark);
       document.getElementById('themeToggle').textContent = state.isDark ? '☀' : '☽';
+      persistSettings();
     }
 
     async function pickProject() {
@@ -650,10 +918,32 @@
       try {
         const result = await invoke('analyze_project', { projectPath: path });
         console.log(result);
+        state.projectInfo = result;
+        state.repoOwner = result.repo_owner || null;
+        state.repoName = result.repo_name || null;
+        state.branch = result.current_branch || 'main';
         if (result.is_git_repo) {
-          document.getElementById('dropHint').textContent = path + ' (Git, branch: ' + (result.current_branch || 'unknown') + ')';
+          document.getElementById('dropHint').textContent = path + ' (Git, branch: ' + state.branch + ')';
+          if (result.languages.length > 0) {
+            const lang = result.languages[0];
+            const name = state.repoName || path.split(/[\\/]/).pop() || 'project';
+            try {
+              const workflowPath = await invoke('generate_workflow', {
+                projectPath: path,
+                language: lang,
+                projectName: name,
+              });
+              console.log('Workflow generated:', workflowPath);
+              document.getElementById('dropHint').textContent = path + ' (workflow: build.yml)';
+            } catch (e) {
+              console.error('Generate workflow error:', e);
+              document.getElementById('dropHint').textContent = path + ' (workflow 生成失败: ' + e + ')';
+            }
+          } else {
+            document.getElementById('dropHint').textContent = path + ' (未检测到支持的语言，跳过 workflow)';
+          }
         } else {
-          document.getElementById('dropHint').textContent = path + ' (not Git)';
+          document.getElementById('dropHint').textContent = path + ' (不是 Git 仓库，跳过 workflow)';
         }
       } catch (e) {
         console.error(e);
@@ -667,6 +957,7 @@
         if (ok) {
           state.isLoggedIn = true;
           state.gitHubToken = token;
+          persistSettings();
           alert(t('loginSuccess'));
           return true;
         } else {
@@ -681,47 +972,237 @@
 
     async function triggerBuild() {
       if (!state.isLoggedIn) {
-        alert('请先登录 GitHub');
+        alert(t('loginRequired'));
+        openSettings();
         return;
       }
       if (!state.projectPath) {
-        alert('请先选择一个项目文件夹');
+        alert(t('projectRequired'));
         return;
       }
+      if (!state.repoOwner || !state.repoName) {
+        alert(t('repoInfoMissing'));
+        return;
+      }
+      const btn = document.getElementById('btnBuild');
+      const btnText = document.getElementById('btnBuildText');
+      btn.disabled = true;
+      btnText.textContent = t('triggering');
       try {
         const request = {
-          repo_owner: 'Wojusensei',
-          repo_name: 'woGAer',
+          repo_owner: state.repoOwner,
+          repo_name: state.repoName,
           workflow_id: 'build.yml',
-          ref_name: 'main',
+          ref_name: state.branch || 'main',
           inputs: {},
           project_path: state.projectPath,
         };
         const result = await invoke('trigger_build', { request });
         console.log(result);
-        alert(t('buildTriggered') + ', Run ID: ' + result.run_id);
+        state.lastRunId = result.run_id;
+        showBuildStatus(result);
+        startStatusPolling();
+        document.getElementById('dropHint').textContent = t('buildTriggered') + ' · Run ID: ' + result.run_id;
       } catch (e) {
-        alert(t('buildFailed') + ': ' + e);
+        console.error(e);
+        document.getElementById('buildStatus').hidden = false;
+        document.getElementById('buildStatusText').textContent = t('buildFailed') + ': ' + e;
+        document.getElementById('buildStatusChip').textContent = t('statusFailed');
+      } finally {
+        btn.disabled = false;
+        btnText.textContent = t('btnBuild');
       }
     }
 
-    async function getHistory() {
+    function showBuildStatus(info) {
+      document.getElementById('buildStatus').hidden = false;
+      document.getElementById('buildStatusText').textContent = t('statusLabel') + ': ' + info.status;
+      document.getElementById('buildStatusChip').textContent = info.status;
+      const runId = info.run_id || info.id || '';
+      const meta = 'Run ' + runId + (info.run_number ? ' / #' + info.run_number : '');
+      document.getElementById('buildStatusMeta').textContent = meta;
+      const link = document.getElementById('buildStatusLink');
+      if (info.html_url) {
+        link.href = info.html_url;
+        link.hidden = false;
+      } else {
+        link.hidden = true;
+      }
+    }
+
+    function startStatusPolling() {
+      stopStatusPolling();
+      state.statusTimer = setInterval(refreshBuildStatus, 5000);
+    }
+
+    function stopStatusPolling() {
+      if (state.statusTimer) {
+        clearInterval(state.statusTimer);
+        state.statusTimer = null;
+      }
+    }
+
+    async function refreshBuildStatus() {
+      if (!state.lastRunId || !state.repoOwner || !state.repoName) return;
       try {
-        const result = await invoke('get_build_history', { limit: 20 });
-        console.log(result);
-        if (result.records && result.records.length > 0) {
-          const msg = result.records.map(r => `${r.repo_name} - ${r.status} (${r.created_at})`).join('\n');
-          alert(t('historyTitle') + ':\n' + msg);
-        } else {
-          alert(t('historyEmpty'));
+        const info = await invoke('get_build_status', {
+          runId: state.lastRunId,
+          repoOwner: state.repoOwner,
+          repoName: state.repoName,
+        });
+        showBuildStatus(info);
+        if (info.status === 'completed' || info.status === 'cancelled' || info.conclusion) {
+          stopStatusPolling();
         }
       } catch (e) {
         console.error(e);
-        alert('获取历史失败: ' + e);
+      }
+    }
+
+    function formatBytes(bytes) {
+      if (!bytes) return '0 B';
+      const units = ['B', 'KB', 'MB', 'GB'];
+      let value = bytes;
+      let unit = 0;
+      while (value >= 1024 && unit < units.length - 1) {
+        value /= 1024;
+        unit++;
+      }
+      return value.toFixed(value >= 100 ? 0 : 1) + ' ' + units[unit];
+    }
+
+    async function fetchHistory() {
+      try {
+        const result = await invoke('get_build_history', { limit: 20 });
+        renderHistory(result.records || []);
+      } catch (e) {
+        console.error(e);
+        document.getElementById('historyList').innerHTML = '<div class="empty-hint">获取历史失败: ' + e + '</div>';
+      }
+    }
+
+    function openHistory() {
+      document.getElementById('historyOverlay').classList.add('active');
+      document.getElementById('historyList').innerHTML = '<div class="empty-hint">加载中...</div>';
+      fetchHistory();
+    }
+
+    function closeHistory() {
+      document.getElementById('historyOverlay').classList.remove('active');
+    }
+
+    function renderHistory(records) {
+      const list = document.getElementById('historyList');
+      if (!records.length) {
+        list.innerHTML = '<div class="empty-hint">' + t('historyEmpty') + '</div>';
+        return;
+      }
+      list.innerHTML = '';
+      records.forEach(record => {
+        const item = document.createElement('div');
+        item.className = 'history-item';
+        const runLabel = record.run_id ? ' · Run ' + record.run_id : '';
+        item.innerHTML = `
+          <div class="history-item-head">
+            <span class="history-item-repo">${record.repo_name || '-'}</span>
+            <span class="status-chip">${record.status || '-'}</span>
+          </div>
+          <div class="history-item-meta">${record.workflow_id || ''} · ${record.created_at || ''}${runLabel}</div>
+          <div class="history-item-actions">
+            <button class="artifacts-btn">${t('viewArtifacts')}</button>
+          </div>
+          <div class="artifact-list" id="artifacts-${record.id}"></div>
+        `;
+        item.querySelector('.artifacts-btn').addEventListener('click', () => viewArtifacts(record));
+        list.appendChild(item);
+      });
+    }
+
+    async function viewArtifacts(record) {
+      const container = document.getElementById('artifacts-' + record.id);
+      if (!container) return;
+      const [owner, name] = (record.repo_name || '').split('/');
+      if (!record.run_id || !owner || !name) {
+        container.innerHTML = '<div class="empty-hint">' + t('noArtifacts') + '</div>';
+        return;
+      }
+      if (!state.isLoggedIn) {
+        container.innerHTML = '<div class="empty-hint">' + t('loginRequired') + '</div>';
+        return;
+      }
+      container.innerHTML = '<div class="empty-hint">加载中...</div>';
+      try {
+        const artifacts = await invoke('get_artifacts', {
+          runId: record.run_id,
+          repoOwner: owner,
+          repoName: name,
+        });
+        renderArtifacts(container, record, artifacts, owner, name);
+      } catch (e) {
+        container.innerHTML = '<div class="empty-hint">' + e + '</div>';
+      }
+    }
+
+    function renderArtifacts(container, record, artifacts, owner, name) {
+      if (!artifacts.length) {
+        container.innerHTML = '<div class="empty-hint">' + t('noArtifacts') + '</div>';
+        return;
+      }
+      container.innerHTML = '';
+      artifacts.forEach(art => {
+        const row = document.createElement('div');
+        row.className = 'artifact-row';
+        row.innerHTML = `
+          <div class="artifact-info">
+            <span>${art.name} (${formatBytes(art.size)})</span>
+            <div class="progress-track"><div class="progress-fill" id="dl-fill-${art.id}"></div></div>
+            <span class="history-item-meta" id="dl-status-${art.id}"></span>
+          </div>
+          <button class="download-btn">${t('download')}</button>
+        `;
+        row.querySelector('.download-btn').addEventListener('click', () => downloadArtifact(record, art, owner, name, row));
+        container.appendChild(row);
+      });
+    }
+
+    async function downloadArtifact(record, artifact, owner, name, row) {
+      if (!state.isLoggedIn) {
+        alert(t('loginRequired'));
+        return;
+      }
+      const btn = row.querySelector('.download-btn');
+      btn.disabled = true;
+      const fill = document.getElementById('dl-fill-' + artifact.id);
+      const statusEl = document.getElementById('dl-status-' + artifact.id);
+      fill.style.width = '0%';
+      statusEl.textContent = t('downloadStarted');
+      try {
+        if (!state.downloadDir) {
+          state.downloadDir = await invoke('get_download_dir');
+        }
+        const result = await invoke('download_artifacts', {
+          request: {
+            artifact_ids: [artifact.id],
+            dest_dir: state.downloadDir,
+            run_id: record.run_id,
+            repo_owner: owner,
+            repo_name: name,
+          },
+        });
+        const saved = (result && result[0]) || state.downloadDir;
+        fill.style.width = '100%';
+        statusEl.textContent = t('downloadComplete') + ': ' + saved;
+        document.getElementById('dropHint').textContent = t('downloadComplete') + ': ' + saved;
+        btn.textContent = t('done');
+      } catch (e) {
+        console.error(e);
+        statusEl.textContent = t('downloadFailed') + ': ' + e;
+        btn.disabled = false;
       }
     }
 
     const settingsOverlay = document.getElementById('settingsOverlay');
+    const historyOverlay = document.getElementById('historyOverlay');
     const settingsTokenInput = document.getElementById('settingsTokenInput');
     const settingsLangSelect = document.getElementById('settingsLangSelect');
 
@@ -732,6 +1213,17 @@
     }
 
     function closeSettings() {
+      const token = settingsTokenInput.value.trim();
+      const lang = settingsLangSelect.value;
+      if (token !== state.gitHubToken || lang !== state.lang) {
+        state.gitHubToken = token;
+        state.isLoggedIn = !!token;
+        state.lang = lang;
+        invoke('set_github_token', { token }).catch(e => console.error(e));
+        invoke('set_language', { lang }).catch(e => console.error(e));
+        persistSettings();
+        updateUI();
+      }
       settingsOverlay.classList.remove('active');
     }
 
@@ -742,17 +1234,29 @@
       if (token && token !== state.gitHubToken) {
         const ok = await githubLogin(token);
         if (!ok) return;
+      } else if (!token && state.gitHubToken) {
+        state.gitHubToken = null;
+        state.isLoggedIn = false;
+        invoke('github_logout').catch(e => console.error(e));
       }
 
       if (lang !== state.lang) {
         await setLanguage(lang);
       }
 
+      persistSettings();
       closeSettings();
     }
 
     listen('download-progress', (event) => {
-      console.log(event.payload);
+      const payload = event.payload || {};
+      const fill = document.getElementById('dl-fill-' + payload.artifact_id);
+      const statusEl = document.getElementById('dl-status-' + payload.artifact_id);
+      if (fill) fill.style.width = Math.min(100, payload.progress || 0) + '%';
+      if (statusEl && payload.downloaded != null && payload.total != null) {
+        statusEl.textContent = formatBytes(payload.downloaded) + ' / ' + formatBytes(payload.total) + ' (' + Math.round(payload.progress || 0) + '%)';
+      }
+      console.log(payload);
     }).catch(e => console.error(e));
 
     document.getElementById('langToggle').addEventListener('click', () => {
@@ -763,22 +1267,33 @@
     document.getElementById('themeToggle').addEventListener('click', toggleTheme);
     document.getElementById('btnPick').addEventListener('click', pickProject);
     document.getElementById('btnSettings').addEventListener('click', openSettings);
-    document.getElementById('btnHistory').addEventListener('click', getHistory);
+    document.getElementById('btnHistory').addEventListener('click', openHistory);
+    document.getElementById('btnBuild').addEventListener('click', triggerBuild);
     document.getElementById('settingsClose').addEventListener('click', closeSettings);
     document.getElementById('settingsSave').addEventListener('click', saveSettings);
+    document.getElementById('historyClose').addEventListener('click', closeHistory);
 
     settingsOverlay.addEventListener('click', (e) => {
       if (e.target === settingsOverlay) closeSettings();
     });
 
-    invoke('get_current_language').then(lang => {
-      state.lang = lang || 'zh';
-      updateUI();
-    }).catch(e => {
-      console.error(e);
-      state.lang = 'zh';
-      updateUI();
+    historyOverlay.addEventListener('click', (e) => {
+      if (e.target === historyOverlay) closeHistory();
     });
+
+    loadSettings();
+    if (!localStorage.getItem('wogaer.lang')) {
+      invoke('get_current_language').then(lang => {
+        state.lang = lang || 'zh';
+        updateUI();
+      }).catch(e => {
+        console.error(e);
+        state.lang = 'zh';
+        updateUI();
+      });
+    } else {
+      updateUI();
+    }
 
     console.log('woGAer UI ready');
   </script>

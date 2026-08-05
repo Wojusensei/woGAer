@@ -1,5 +1,202 @@
 use anyhow::{Result, Context, anyhow};
 use serde::{Deserialize, Serialize};
+use serde_json::json;
+pub struct WorkflowTemplate;
+
+impl WorkflowTemplate {
+    pub fn generate(language: &str, project_name: &str) -> String {
+        match language {
+            "Rust" => Self::rust_template(project_name),
+            "Node.js" => Self::node_template(project_name),
+            "Python" => Self::python_template(project_name),
+            "Go" => Self::go_template(project_name),
+            _ => Self::default_template(project_name),
+        }
+    }
+
+    fn rust_template(name: &str) -> String {
+        format!(
+            r#"name: Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [x86_64-unknown-linux-gnu, x86_64-pc-windows-gnu, x86_64-apple-darwin]
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        target: ${{{{ matrix.target }}}}
+        override: true
+    - name: Build
+      run: cargo build --release --target ${{{{ matrix.target }}}}
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: {}-${{{{ matrix.target }}}}
+        path: target/${{{{ matrix.target }}}}/release/*
+
+"#,
+            name
+        )
+    }
+
+    fn node_template(name: &str) -> String {
+        format!(
+            r#"name: Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js ${{{{ matrix.node-version }}}}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{{{ matrix.node-version }}}}
+        cache: 'npm'
+    - run: npm ci
+    - run: npm run build --if-present
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: {}-${{{{ matrix.node-version }}}}
+        path: dist/
+
+"#,
+            name
+        )
+    }
+
+    fn python_template(name: &str) -> String {
+        format!(
+            r#"name: Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.10', '3.11']
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{{{ matrix.python-version }}}}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{{{ matrix.python-version }}}}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Build
+      run: python setup.py build
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: {}-${{{{ matrix.python-version }}}}
+        path: build/
+
+"#,
+            name
+        )
+    }
+
+    fn go_template(name: &str) -> String {
+        format!(
+            r#"name: Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: [1.21.x, 1.22.x]
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: ${{{{ matrix.go-version }}}}
+    - name: Build
+      run: go build -v ./...
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: {}-${{{{ matrix.go-version }}}}
+        path: ./
+
+"#,
+            name
+        )
+    }
+
+    fn default_template(name: &str) -> String {
+        format!(
+            r#"name: Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build
+      run: echo "No build script configured"
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: {}
+        path: .
+
+"#,
+            name
+        )
+    }
+}
 use std::collections::HashMap;
 use std::time::Duration;
 
@@ -60,13 +257,10 @@ impl WorkflowClient {
     pub fn dispatch_workflow(&self, workflow_id: &str, options: &WorkflowDispatchOptions) -> Result<()> {
         let url = format!("{}/actions/workflows/{}/dispatches", self.base_url(), workflow_id);
         
-        let mut payload = HashMap::new();
-        payload.insert("ref", options.ref_name.clone());
+        let mut payload = serde_json::Map::new();
+        payload.insert("ref".to_string(), json!(options.ref_name));
         if !options.inputs.is_empty() {
-            if !options.inputs.is_empty() {
-                let inputs_json = serde_json::to_string(&options.inputs).unwrap_or_default();
-                payload.insert("inputs", inputs_json);
-            }
+            payload.insert("inputs".to_string(), json!(options.inputs));
         }
 
         let response = self.client
