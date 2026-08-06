@@ -251,9 +251,28 @@ async fn trigger_build(request: BuildRequest, state: State<'_, AppState>) -> Res
 
     let run = run_blocking(move || -> Result<Option<WorkflowRun>, String> {
         let client = WorkflowClient::new(token_for_build, repo_owner, repo_name);
-        client
-            .dispatch_workflow(&workflow_id, &options)
-            .map_err(|e| e.to_string())?;
+        if let Err(e) = client.validate_repo_access() {
+            let msg = e.to_string();
+            return Err(if msg.contains("404") {
+                "仓库不存在、无访问权限，或仓库为私有且 Token 无权限".to_string()
+            } else if msg.contains("403") {
+                "Token 权限不足，请确保勾选了 workflow 权限".to_string()
+            } else {
+                msg
+            });
+        }
+        client.dispatch_workflow(&workflow_id, &options).map_err(|e| {
+            let msg = e.to_string();
+            if msg.contains("404") {
+                "workflow 文件不存在，请先生成 workflow 并推送到仓库".to_string()
+            } else if msg.contains("422") {
+                "触发参数无效，请检查分支名或 inputs".to_string()
+            } else if msg.contains("403") {
+                "Token 权限不足，请确保勾选了 workflow 权限".to_string()
+            } else {
+                msg
+            }
+        })?;
 
         std::thread::sleep(std::time::Duration::from_secs(2));
         let runs = client
@@ -552,6 +571,42 @@ async fn generate_workflow(
     Ok(file_path.to_string_lossy().to_string())
 }
 
+#[tauri::command]
+async fn push_workflow(project_path: String, state: State<'_, AppState>) -> Result<String, String> {
+    let token = state
+        .github_token
+        .lock()
+        .unwrap()
+        .clone()
+        .ok_or_else(|| "未登录 GitHub".to_string())?;
+    let path = PathBuf::from(&project_path);
+    let repo = GitRepo::new(path.clone());
+    let status = repo.status().map_err(|e| e.to_string())?;
+    let remote_url = status
+        .remote_url
+        .ok_or_else(|| "项目没有配置远程仓库".to_string())?;
+    let (owner, name) = git::repo::parse_remote(&remote_url);
+    let owner = owner.ok_or_else(|| "无法解析远程仓库 owner".to_string())?;
+    let name = name.ok_or_else(|| "无法解析远程仓库名称".to_string())?;
+    let branch = status
+        .current_branch
+        .filter(|s| !s.trim().is_empty())
+        .unwrap_or_else(|| "main".to_string());
+    let workflow_path = path.join(".github").join("workflows").join("build.yml");
+    let bytes = std::fs::read(&workflow_path).map_err(|e| format!("读取 workflow 失败: {}", e))?;
+    use base64::{engine::general_purpose::STANDARD, Engine as _};
+    let content = STANDARD.encode(&bytes);
+
+    run_blocking(move || {
+        let client = WorkflowClient::new(token, owner, name);
+        client
+            .push_workflow_file(&branch, "build.yml", &content)
+            .map_err(|e| e.to_string())?;
+        Ok("Workflow 已推送到 GitHub".to_string())
+    })
+    .await
+}
+
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
@@ -586,6 +641,7 @@ fn main() {
             download_artifacts,
             get_supported_languages,
             generate_workflow,
+            push_workflow,
             set_github_token,
             get_download_dir,
             get_github_user,

@@ -1284,6 +1284,10 @@
             <span class="btn-text" id="btnBuildText">触发构建</span>
             <span class="btn-glass"></span>
           </button>
+          <button class="btn" id="btnPushWorkflow">
+            <span class="btn-text" id="btnPushWorkflowText">推送 Workflow</span>
+            <span class="btn-glass"></span>
+          </button>
         </div>
         <div class="drop-zone" id="dropZone">
           <strong id="dropStrong">点击「选择项目」按钮浏览文件夹</strong><br />
@@ -1492,8 +1496,9 @@
         historyLoadFailed: '加载历史失败',
         downloadSaved: '产物已下载到',
         openFolder: '打开文件夹',
-        errPermission: 'Token 权限不足，请确保勾选了 workflow 权限',
+        errPermission: 'Token 权限不足，请检查 workflow 与 contents:write 权限',
         errNotFound: '仓库不存在或没有访问权限',
+        errWorkflowMissing: 'workflow 文件不存在，请先生成 workflow 并推送到仓库',
         errTimeout: 'API 请求超时，请检查网络连接',
         opFailed: '操作失败',
         guideTitle: '登录步骤',
@@ -1532,6 +1537,10 @@
         githubSlow: 'GitHub 响应较慢，正在等待结果...',
         loginVerifying: '正在验证 Token...',
         openGithub: 'GitHub',
+        btnPushWorkflow: '推送 Workflow',
+        pushingWorkflow: '正在推送...',
+        workflowPushed: 'Workflow 已推送到 GitHub',
+        pushFailed: '推送失败',
       },
       en: {
         title: 'woGAer',
@@ -1599,8 +1608,9 @@
         historyLoadFailed: 'Failed to load history',
         downloadSaved: 'Artifact downloaded to',
         openFolder: 'Open folder',
-        errPermission: 'Token lacks permission. Make sure the workflow scope is enabled',
+        errPermission: 'Token lacks permission. Check the workflow scope and contents:write permission',
         errNotFound: 'Repository not found or no access permission',
+        errWorkflowMissing: 'Workflow file not found. Generate the workflow and push it to the repository first',
         errTimeout: 'API request timed out. Please check your network connection',
         opFailed: 'Operation failed',
         guideTitle: 'Login steps',
@@ -1639,6 +1649,10 @@
         githubSlow: 'GitHub is responding slowly, waiting for the result...',
         loginVerifying: 'Verifying token...',
         openGithub: 'GitHub',
+        btnPushWorkflow: 'Push Workflow',
+        pushingWorkflow: 'Pushing workflow...',
+        workflowPushed: 'Workflow pushed to GitHub',
+        pushFailed: 'Push failed',
       }
     };
 
@@ -1653,6 +1667,7 @@
       document.getElementById('btnSettingsText').textContent = t('btnSettings');
       document.getElementById('btnHistoryText').textContent = t('btnHistory');
       document.getElementById('btnBuildText').textContent = t('btnBuild');
+      document.getElementById('btnPushWorkflowText').textContent = t('btnPushWorkflow');
       document.getElementById('dropStrong').textContent = t('dropStrong');
       document.getElementById('dropHint').textContent = t('dropHint');
       document.getElementById('descLine').textContent = t('desc');
@@ -1707,6 +1722,9 @@
       const low = msg.toLowerCase();
       if (low.includes('permission') || low.includes('403') || (low.includes('workflow') && low.includes('token'))) {
         return t('errPermission');
+      }
+      if (low.includes('workflow') && (low.includes('404') || low.includes('not found') || low.includes('不存在'))) {
+        return t('errWorkflowMissing');
       }
       if (low.includes('not found') || low.includes('404')) {
         return t('errNotFound');
@@ -2094,7 +2112,7 @@
               });
               console.log('Workflow generated:', workflowPath);
               document.getElementById('dropHint').textContent = path + ' (workflow: build.yml)';
-              showStatus(t('workflowGenerated'), 'success');
+              statusWithAction(t('workflowGenerated'), 'success', t('btnPushWorkflow'), pushWorkflow);
             } catch (e) {
               console.error('Generate workflow error:', e);
               document.getElementById('dropHint').textContent = path + ' (workflow 生成失败: ' + e + ')';
@@ -2479,15 +2497,42 @@
         console.error(e);
         state.buildTriggering = false;
         stopBuildElapsed();
+        state.lastStatus = 'completed';
+        state.lastConclusion = 'failure';
+        renderBuildBars('completed', 'failure');
         renderBuildMeta();
+        renderBuildLogs();
+        const repoTag = (state.repoOwner && state.repoName) ? state.repoOwner + '/' + state.repoName : '';
+        const friendly = friendlyError(e);
         document.getElementById('buildStatus').hidden = false;
-        document.getElementById('buildStatusText').textContent = t('buildFailed') + ': ' + friendlyError(e);
+        document.getElementById('buildStatusText').textContent = t('buildFailed') + (repoTag ? ' · ' + repoTag : '') + ': ' + friendly;
         document.getElementById('buildChip').textContent = t('statusFailed');
-        logBuild(t('buildLogFailed') + ': ' + friendlyError(e), 'error');
-        showStatus(friendlyError(e), 'error');
+        logBuild(t('buildLogFailed') + (repoTag ? ' · ' + repoTag : '') + ': ' + friendly, 'error');
+        showStatus(friendly, 'error');
       } finally {
         btn.disabled = false;
         btnText.textContent = t('btnBuild');
+      }
+    }
+
+    async function pushWorkflow() {
+      if (!state.projectPath) {
+        showStatus(t('projectRequired'), 'error');
+        return;
+      }
+      const btn = document.getElementById('btnPushWorkflow');
+      const btnText = document.getElementById('btnPushWorkflowText');
+      btn.disabled = true;
+      btnText.textContent = t('pushingWorkflow');
+      try {
+        const msg = await invokeWithSlowNotice('push_workflow', { projectPath: state.projectPath }, 10000, 60000);
+        showStatus(msg || t('workflowPushed'), 'success');
+      } catch (e) {
+        console.error(e);
+        showStatus(t('pushFailed') + ': ' + friendlyError(e), 'error');
+      } finally {
+        btn.disabled = false;
+        btnText.textContent = t('btnPushWorkflow');
       }
     }
 
@@ -2764,6 +2809,7 @@
     document.getElementById('btnSettings').addEventListener('click', openSettings);
     document.getElementById('btnHistory').addEventListener('click', () => switchTab('history'));
     document.getElementById('btnBuild').addEventListener('click', triggerBuild);
+    document.getElementById('btnPushWorkflow').addEventListener('click', pushWorkflow);
     document.getElementById('tabProject').addEventListener('click', () => switchTab('project'));
     document.getElementById('tabBuild').addEventListener('click', () => switchTab('build'));
     document.getElementById('tabHistory').addEventListener('click', () => switchTab('history'));

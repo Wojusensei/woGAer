@@ -99,6 +99,36 @@ impl GitRepo {
         Ok(())
     }
 
+    pub fn push_workflow(&self) -> Result<()> {
+        let workflow = self
+            .path
+            .join(".github")
+            .join("workflows")
+            .join("build.yml");
+        if !workflow.exists() {
+            return Err(anyhow!("build.yml 不存在，请先生成 workflow"));
+        }
+
+        let file = workflow.to_string_lossy().to_string();
+        self.run_git(&["add", &file])?;
+
+        let has_staged = self.run_git(&["diff", "--cached", "--quiet"]).is_err();
+        if has_staged {
+            self.run_git(&["commit", "-m", "chore: add GitHub Actions build workflow"])?;
+        }
+
+        let branch = self
+            .run_git(&["branch", "--show-current"])
+            .unwrap_or_default();
+        let branch = if branch.trim().is_empty() {
+            "main"
+        } else {
+            branch.trim()
+        };
+        self.run_git(&["push", "-u", "origin", branch])?;
+        Ok(())
+    }
+
     pub fn detect_language(&self) -> Vec<String> {
         let mut detected = Vec::new();
         let entries = match fs::read_dir(&self.path) {

@@ -71,7 +71,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
+        node-version: [20.x, 22.x]
     steps:
     - uses: actions/checkout@v4
     - name: Use Node.js ${{{{ matrix.node-version }}}}
@@ -479,7 +479,68 @@ impl WorkflowClient {
         }))
     }
 
-    pub fn validate_repo_access(&self) -> Result<bool> {
+    pub fn push_workflow_file(&self, branch: &str, filename: &str, content_base64: &str) -> Result<()> {
+        let path = format!(
+            "{}/contents/.github/workflows/{}",
+            self.base_url(),
+            filename
+        );
+        let check_url = format!("{}?ref={}", path, branch);
+
+        let existing_sha = {
+            let response = self
+                .client
+                .get(&check_url)
+                .header("Authorization", format!("Bearer {}", self.token))
+                .header("Accept", "application/vnd.github.v3+json")
+                .header("User-Agent", "woGAer")
+                .send()
+                .context("Failed to check workflow file")?;
+
+            match response.status().as_u16() {
+                200 => {
+                    let data: serde_json::Value = response.json()?;
+                    Some(data["sha"].as_str().unwrap_or("").to_string())
+                }
+                404 => None,
+                status => {
+                    let text = response.text().unwrap_or_default();
+                    return Err(anyhow!("Check workflow failed: {} - {}", status, text));
+                }
+            }
+        };
+
+        let mut payload = serde_json::Map::new();
+        payload.insert(
+            "message".to_string(),
+            json!("chore: add GitHub Actions build workflow"),
+        );
+        payload.insert("content".to_string(), json!(content_base64));
+        payload.insert("branch".to_string(), json!(branch));
+        if let Some(sha) = existing_sha {
+            payload.insert("sha".to_string(), json!(sha));
+        }
+
+        let response = self
+            .client
+            .put(&path)
+            .header("Authorization", format!("Bearer {}", self.token))
+            .header("Accept", "application/vnd.github.v3+json")
+            .header("User-Agent", "woGAer")
+            .json(&payload)
+            .send()
+            .context("Failed to push workflow")?;
+
+        if !response.status().is_success() {
+            let status = response.status();
+            let text = response.text().unwrap_or_default();
+            return Err(anyhow!("Push workflow failed: {} - {}", status, text));
+        }
+
+        Ok(())
+    }
+
+    pub fn validate_repo_access(&self) -> Result<()> {
         let url = self.base_url();
 
         let response = self.client
@@ -490,6 +551,12 @@ impl WorkflowClient {
             .send()
             .context("Failed to validate repo access")?;
 
-        Ok(response.status().is_success())
+        if response.status().is_success() {
+            Ok(())
+        } else {
+            let status = response.status();
+            let text = response.text().unwrap_or_default();
+            Err(anyhow!("Repo check failed: {} - {}", status, text))
+        }
     }
 }
