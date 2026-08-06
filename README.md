@@ -5,7 +5,7 @@
 ![使用图例](使用图例.png)
 
 
-项目基于 Rust + Tauri v2 + Vite 构建，**依旧地**，采用液态玻璃风格界面。
+为保障高性能的后端以及舒适的前端，项目基于 Rust + Tauri v2 + Vite 构建，**依旧地**，采用液态玻璃 UI 界面
 
 
 
@@ -15,7 +15,7 @@
 - 通过文件夹对话框或拖拽选择本地项目，工具可以接收用户本地的文件
 - 自动检测是否为 Git 仓库、当前分支、工作区是否干净等等
 - 解析 `origin` 远程地址，得到 `repo_owner` 和 `repo_name`
-- 根据项目文件识别技术栈：Rust、Node.js、Python、Go、Java、C++、Docker 等均可正常识别
+- 根据项目文件识别技术栈：经测试，Rust、Node.js、Python、Go、Java、C++、Docker 等均可正常识别
 - ！！！非 Git 项目仍可分析，但**不会触发 Workflow 生成与构建** ！！！
 
 ### Workflow 生成与推送
@@ -61,20 +61,10 @@
 
 ### 液态玻璃 UI
 - WebGL 光线追踪液态玻璃背景，支持折射、反射和动态光斑
-- 真·玻璃面板、体温计式进度条、底部状态消息栏
-- 状态消息分为成功、失败、进行中三类(均设计了不同的侧边颜色标识)，5 s后自动消失
+- 真·玻璃面板、体温计一样的进度条(虽然不是全真进度)、左下角状态消息栏
+- 状态消息分为成功、失败、进行中三类(均设计了不同的侧边颜色标识)，5 s 后自动消失
 - 界面不使用 `alert()` 弹窗，所有错误在界面内展示
-- 部分参考了 https://github.com/shuding/liquid-glass 仓库提供的液态玻璃方案
-
-
-
-## 💻 实现原理
-
-### Tauri 进程模型
-woGAer 使用 Tauri v2。前端运行在系统 WebView 中，后端为了高性能使用了 Rust 进程，两者通过 `invoke` IPC 通信。前端只负责交互与渲染，所有文件系统、Git、网络和 GitHub API 调用都在 Rust 侧执行。
-
-### 项目分析流程
-Rust 端通过 `git` 命令包装器读取仓库状态：
+- 部分思路参考了 https://github.com/shuding/liquid-glass 仓库提供的液态玻璃构建方案
 
 ```text
 git rev-parse --git-dir
@@ -228,6 +218,7 @@ Fedora or RHEL:[下载 wogaer-0.1.0-1.x86_64.rpm](https://github.com/Wojusensei/
 Linux 通用:[下载 wogaer-0.1.0-linux-x64.tar.gz](https://github.com/Wojusensei/woGAer/releases/download/v0.1.0/wogaer-0.1.0-linux-x64.tar.gz)
 
 #### MacOS：
+
 ```bash
 open wogaer_0.1.0_aarch64.dmg
 ```
