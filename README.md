@@ -2,6 +2,8 @@
 
 这是一个新手向 GitHub Actions 自动化打包工具，用来降低 Github Actions 的使用难度。用户在下载本工具到本地之后，可以通过选择本地项目、分析技术栈、生成并推送 Workflow、触发远程构建来跟踪构建进度并下载多平台安装包，无特殊情况基本不用手写 YAML。项目基于 Rust + Tauri v2 + Vite 构建，依旧的，采用液态玻璃风格界面。
 
+
+
 ## 🔧 功能
 
 ### 项目分析
@@ -58,6 +60,8 @@
 - 状态消息分为成功、失败、进行中三类(均设计了不同的侧边颜色标识)，5 s后自动消失
 - 界面不使用 `alert()` 弹窗，所有错误在界面内展示
 - 部分参考了 https://github.com/shuding/liquid-glass 仓库提供的液态玻璃方案
+
+
 
 ## 💻 实现原理
 
@@ -132,6 +136,8 @@ POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches
 ### 阻塞任务隔离
 GitHub API 使用 `reqwest::blocking`，全部通过 `run_blocking` 放到独立线程执行，再用 `oneshot` 把结果传回 async 层。这样，长耗时请求不会卡住界面，也不会破坏 Tauri 的 tokio 运行时。
 
+
+
 ## 📖 目录结构
 
 ```text
@@ -162,6 +168,8 @@ woGAer/
         └── build.yml           # 本项目多平台打包 workflow
 ```
 
+
+
 ## 🚄 开发环境
 
 ```bash
@@ -174,6 +182,8 @@ npm run tauri dev
 # 仅构建前端的产物
 npm run build
 ```
+
+
 
 ## 🚥 使用流程
 
@@ -223,6 +233,8 @@ tar -xzvf wogaer-0.1.0-linux-x64.tar.gz -C /opt/wogaer
 /opt/wogaer/wogaer-0.1.0-linux-x64/wogaer
 ```
 
+
+
 ## 🦀 技术栈
 
 - 桌面框架：使用 Tauri v2 构建
@@ -232,6 +244,8 @@ tar -xzvf wogaer-0.1.0-linux-x64.tar.gz -C /opt/wogaer
 - 前端依赖：`@tauri-apps/api`
 - 持久化：SQLite + localStorage
 - 持续集成：GitHub Actions
+
+
 
 ## 🤝 贡献
 
@@ -283,6 +297,8 @@ npm run build
 ### 安全说明
 
 如果发现安全漏洞，尽量不要公开发布细节，可以优先通过 GitHub Security Advisory 或仓库维护者的私信提交。个人邮箱我已显示在主页。请万万不要在 Issue、PR 或评论中贴出 Token、Cookie 或任何密钥。
+
+
 
 ## 🤔 FAQ
 
@@ -390,6 +406,8 @@ npm install
 ### 14. ask:woGAer 会修改我的代码吗?
 
 综上所述，不会。woGAer 只会在项目目录中创建 `.github/workflows/build.yml`，并通过 GitHub Contents API 写入远程仓库。它不会执行 `git add`、`git commit`、`git push`，也不会修改你的源码、分支或提交历史。
+
+
 
 ## 📃 开源协议
 
