@@ -24,6 +24,11 @@ jobs:
     - uses: swatinem/rust-cache@v2
     - run: npm ci
     - run: npm run tauri build -- --bundles deb,rpm
+    - name: Create Linux tarball
+      run: |
+        mkdir -p tarball/wogaer-0.1.0-linux-x64
+        cp src-tauri/target/release/wogaer tarball/wogaer-0.1.0-linux-x64/wogaer
+        tar -czf tarball/wogaer-0.1.0-linux-x64.tar.gz -C tarball wogaer-0.1.0-linux-x64
     - name: Collect installers
       id: files
       shell: bash
@@ -35,6 +40,11 @@ jobs:
       with:
         name: bundle-ubuntu
         path: src-tauri/target/release/bundle
+        if-no-files-found: error
+    - uses: actions/upload-artifact@v4
+      with:
+        name: wogaer-0.1.0-linux-x64.tar.gz
+        path: tarball/wogaer-0.1.0-linux-x64.tar.gz
         if-no-files-found: error
 
   publish-ubuntu:
@@ -116,10 +126,6 @@ jobs:
     - uses: swatinem/rust-cache@v2
     - run: npm ci
     - run: npm run tauri build -- --bundles dmg,app
-    - name: Create app tarball
-      run: |
-        mkdir -p tarball
-        tar -czf tarball/wogaer-0.1.0-macos-arm64.tar.gz -C src-tauri/target/release/bundle/macos wogaer.app
     - name: Collect installers
       id: files
       shell: bash
@@ -131,11 +137,6 @@ jobs:
       with:
         name: bundle-macos
         path: src-tauri/target/release/bundle
-        if-no-files-found: error
-    - uses: actions/upload-artifact@v4
-      with:
-        name: wogaer-0.1.0-macos-arm64.tar.gz
-        path: tarball/wogaer-0.1.0-macos-arm64.tar.gz
         if-no-files-found: error
 
   publish-macos:
