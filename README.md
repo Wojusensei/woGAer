@@ -199,7 +199,9 @@ npm run build
 7. 在产物列表点击「下载」保存安装包
 8. 在「历史」标签页查看历史构建记录
 
-## 📦 安装包
+## 📦 下载与安装
+
+所有安装包见：[woGAer v0.1.0 Releases](https://github.com/Wojusensei/woGAer/releases/tag/v0.1.0)
 
 项目自带 GitHub Actions 多平台打包 workflow，每次推送到 `main` 或手动触发都会生成：（这里就以本项目举例）
 
@@ -211,15 +213,33 @@ npm run build
 
 ### 安装示例：
 
+#### 汇总
+
+MacOS:[下载 wogaer_0.1.0_aarch64.dmg](https://github.com/Wojusensei/woGAer/releases/download/v0.1.0/wogaer_0.1.0_aarch64.dmg)
+
+Windows:[下载 wogaer_0.1.0_x64-setup.exe](https://github.com/Wojusensei/woGAer/releases/download/v0.1.0/wogaer_0.1.0_x64-setup.exe)
+
+Debian or Ubuntu:[下载 wogaer_0.1.0_amd64.deb](https://github.com/Wojusensei/woGAer/releases/download/v0.1.0/wogaer_0.1.0_amd64.deb)
+
+Fedora or RHEL:[下载 wogaer-0.1.0-1.x86_64.rpm](https://github.com/Wojusensei/woGAer/releases/download/v0.1.0/wogaer-0.1.0-1.x86_64.rpm)
+
+Linux 通用:[下载 wogaer-0.1.0-linux-x64.tar.gz](https://github.com/Wojusensei/woGAer/releases/download/v0.1.0/wogaer-0.1.0-linux-x64.tar.gz)
+
 #### MacOS：
 ```bash
 open wogaer_0.1.0_aarch64.dmg
+```
+当前 dmg 未签名、未公证。首次打开请右键点击 App 图标，选择「打开」；或执行：
+
+```bash
+xattr -dr com.apple.quarantine /Applications/wogaer.app
 ```
 
 #### Windows：
 ```bash
 wogaer_0.1.0_x64-setup.exe
 ```
+当前 exe 未签名。首次运行如出现 SmartScreen 警告，点击「更多信息」->「仍要运行」。
 #### Debian / Ubuntu
 ```bash
 sudo dpkg -i wogaer_0.1.0_amd64.deb
@@ -236,7 +256,139 @@ tar -xzvf wogaer-0.1.0-linux-x64.tar.gz -C /opt/wogaer
 /opt/wogaer/wogaer-0.1.0-linux-x64/wogaer
 ```
 
+#### Linux 通用包依赖说明
 
+`wogaer-0.1.0-linux-x64.tar.gz` 是便携版，里面只有 woGAer 可执行文件、desktop 文件和图标，**不包含任何系统运行库**。它依赖系统自带的 WebKitGTK / GTK 图形栈，所以不同发行版需要先安装对应的运行时依赖，否则启动时会报缺少共享库。
+
+##### 最低要求
+
+- x86_64 Linux 发行版
+- glibc 版本 ≥ 2.35（安装包基于 Ubuntu 22.04 构建）
+- 有图形界面环境（X11 或 Wayland），不支持无显示器的纯命令行服务器
+- 建议系统已安装 WebKitGTK 4.1 和 GTK 3 运行时
+
+推荐的发行版基线：
+
+- Debian 12+
+- Ubuntu 22.04+
+- Fedora 37+
+- Arch Linux 滚动版本
+- openSUSE Tumbleweed / Leap 15.5+
+
+如果发行版过老，例如 Ubuntu 20.04、Debian 11，运行时可能报：
+
+```text
+version `GLIBC_2.34' not found
+```
+
+这种问题无法靠安装额外依赖解决，需要使用更高版本的系统，或改用 `.deb` / `.rpm` 安装包。
+
+###### 依赖清单
+
+运行 woGAer 主要依赖以下运行时：
+
+- `webkit2gtk-4.1`：Tauri 的 WebView 渲染引擎
+- `gtk3`：窗口和界面基础库
+- `librsvg2`：SVG 图标渲染
+- `libappindicator`：系统托盘/指示器支持（可选）
+- `libsoup3`：WebKit 网络层依赖，通常随 webkit2gtk 自动安装
+
+#### 各发行版安装
+
+##### Debian / Ubuntu
+
+```bash
+sudo apt update
+sudo apt install -y libwebkit2gtk-4.1-0 libgtk-3-0 librsvg2-common
+```
+
+如果需要托盘支持：
+
+```bash
+sudo apt install -y libayatana-appindicator3-1
+```
+
+##### Fedora / RHEL / Rocky Linux
+
+```bash
+sudo dnf install -y webkit2gtk4.1 gtk3 librsvg2
+```
+
+如果需要托盘支持：
+
+```bash
+sudo dnf install -y libappindicator-gtk3
+```
+
+##### Arch Linux / Manjaro
+
+```bash
+sudo pacman -S --needed webkit2gtk-4.1 gtk3 librsvg
+```
+
+如果需要托盘支持：
+
+```bash
+sudo pacman -S --needed libappindicator-gtk3
+```
+
+##### openSUSE
+
+```bash
+sudo zypper install -y webkit2gtk3 gtk3 librsvg2
+```
+
+如果软件源中找不到 `webkit2gtk3`，请确认使用的是较新的 openSUSE 版本，或安装对应的 `webkit2gtk-4.1` 包。
+
+#### 解压与运行
+
+```bash
+mkdir -p /opt/wogaer
+tar -xzvf wogaer-0.1.0-linux-x64.tar.gz -C /opt/wogaer
+/opt/wogaer/wogaer-0.1.0-linux-x64/wogaer
+```
+
+如果系统是桌面环境，也可以先安装 desktop 文件：
+
+```bash
+sudo cp /opt/wogaer/wogaer-0.1.0-linux-x64/share/applications/wogaer.desktop /usr/share/applications/
+sudo cp -r /opt/wogaer/wogaer-0.1.0-linux-x64/share/icons/* /usr/share/icons/
+```
+
+##### 依赖检查
+
+解压后可以用 `ldd` 检查是否缺少运行库：
+
+```bash
+ldd wogaer-0.1.0-linux-x64/wogaer | grep "not found"
+```
+
+如果没有输出，说明系统运行库齐全，可以直接启动。
+
+##### 常见错误
+
+###### 报错：`error while loading shared libraries: libwebkit2gtk-4.1.so.0`
+
+缺少 WebKitGTK 运行时，执行对应发行版的安装命令。
+
+###### 报错：`error while loading shared libraries: libgtk-3.so.0`
+
+缺少 GTK3，执行对应发行版的安装命令。
+
+###### 报错：`Gtk-ERROR **: cannot open display`
+
+当前环境没有图形界面，或没有设置显示服务器。需要在有桌面会话的环境中运行：
+
+```bash
+export DISPLAY=:0
+./wogaer
+```
+
+Wayland 会话通常不需要手动设置 `DISPLAY`。
+
+###### 报错：`version GLIBC_2.34 not found`
+
+系统太旧，glibc 低于构建基线。请使用更高版本的发行版，或改用官方 `.deb` / `.rpm` 安装包。
 
 ## 🦀 技术栈
 
