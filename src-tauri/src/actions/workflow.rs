@@ -92,6 +92,168 @@ jobs:
         )
     }
 
+    pub fn tauri_template(name: &str) -> String {
+        let _ = name;
+        format!(
+            r#"name: Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-ubuntu:
+    runs-on: ubuntu-22.04
+    outputs:
+      files: ${{{{ steps.files.outputs.files }}}}
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 22
+        cache: npm
+    - name: Install Linux dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf rpm
+    - uses: dtolnay/rust-toolchain@stable
+    - uses: swatinem/rust-cache@v2
+    - run: npm ci
+    - run: npm run tauri build
+    - name: Collect installers
+      id: files
+      shell: bash
+      run: |
+        if [ "$RUNNER_OS" = "Windows" ]; then PY=python; else PY=python3; fi
+        list=$(find src-tauri/target/release/bundle -type f \( -name '*.deb' -o -name '*.rpm' -o -name '*.AppImage' -o -name '*.dmg' -o -name '*.msi' -o -name '*.exe' -o -name '*.pkg' \) -exec basename {{}} \; | sort -u)
+        json=$(echo "$list" | $PY -c 'import json,sys; print(json.dumps([l.strip() for l in sys.stdin if l.strip()]))')
+        echo "files=$json" >> "$GITHUB_OUTPUT"
+    - uses: actions/upload-artifact@v4
+      with:
+        name: bundle-ubuntu
+        path: src-tauri/target/release/bundle
+        if-no-files-found: error
+
+  publish-ubuntu:
+    needs: build-ubuntu
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        file: ${{{{ fromJson(needs.build-ubuntu.outputs.files) }}}}
+    steps:
+    - uses: actions/download-artifact@v4
+      with:
+        name: bundle-ubuntu
+        path: out
+    - name: Move installer
+      run: find out -type f -name "${{{{ matrix.file }}}}" -exec mv -n {{}} ./ \;
+    - uses: actions/upload-artifact@v4
+      with:
+        name: ${{{{ matrix.file }}}}
+        path: ${{{{ matrix.file }}}}
+        if-no-files-found: error
+
+  build-windows:
+    runs-on: windows-latest
+    outputs:
+      files: ${{{{ steps.files.outputs.files }}}}
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 22
+        cache: npm
+    - uses: dtolnay/rust-toolchain@stable
+    - uses: swatinem/rust-cache@v2
+    - run: npm ci
+    - run: npm run tauri build
+    - name: Collect installers
+      id: files
+      shell: bash
+      run: |
+        if [ "$RUNNER_OS" = "Windows" ]; then PY=python; else PY=python3; fi
+        list=$(find src-tauri/target/release/bundle -type f -exec basename {{}} \;)
+        json=$(echo "$list" | $PY -c 'import json,sys; print(json.dumps([l.strip() for l in sys.stdin if l.strip()]))')
+        echo "files=$json" >> "$GITHUB_OUTPUT"
+    - uses: actions/upload-artifact@v4
+      with:
+        name: bundle-windows
+        path: src-tauri/target/release/bundle
+        if-no-files-found: error
+
+  publish-windows:
+    needs: build-windows
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        file: ${{{{ fromJson(needs.build-windows.outputs.files) }}}}
+    steps:
+    - uses: actions/download-artifact@v4
+      with:
+        name: bundle-windows
+        path: out
+    - name: Move installer
+      run: find out -type f -name "${{{{ matrix.file }}}}" -exec mv -n {{}} ./ \;
+    - uses: actions/upload-artifact@v4
+      with:
+        name: ${{{{ matrix.file }}}}
+        path: ${{{{ matrix.file }}}}
+        if-no-files-found: error
+
+  build-macos:
+    runs-on: macos-latest
+    outputs:
+      files: ${{{{ steps.files.outputs.files }}}}
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 22
+        cache: npm
+    - uses: dtolnay/rust-toolchain@stable
+    - uses: swatinem/rust-cache@v2
+    - run: npm ci
+    - run: npm run tauri build
+    - name: Collect installers
+      id: files
+      shell: bash
+      run: |
+        if [ "$RUNNER_OS" = "Windows" ]; then PY=python; else PY=python3; fi
+        list=$(find src-tauri/target/release/bundle -type f -exec basename {{}} \;)
+        json=$(echo "$list" | $PY -c 'import json,sys; print(json.dumps([l.strip() for l in sys.stdin if l.strip()]))')
+        echo "files=$json" >> "$GITHUB_OUTPUT"
+    - uses: actions/upload-artifact@v4
+      with:
+        name: bundle-macos
+        path: src-tauri/target/release/bundle
+        if-no-files-found: error
+
+  publish-macos:
+    needs: build-macos
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        file: ${{{{ fromJson(needs.build-macos.outputs.files) }}}}
+    steps:
+    - uses: actions/download-artifact@v4
+      with:
+        name: bundle-macos
+        path: out
+    - name: Move installer
+      run: find out -type f -name "${{{{ matrix.file }}}}" -exec mv -n {{}} ./ \;
+    - uses: actions/upload-artifact@v4
+      with:
+        name: ${{{{ matrix.file }}}}
+        path: ${{{{ matrix.file }}}}
+        if-no-files-found: error
+
+"#,
+        )
+    }
+
     fn python_template(name: &str) -> String {
         format!(
             r#"name: Build
@@ -558,5 +720,26 @@ impl WorkflowClient {
             let text = response.text().unwrap_or_default();
             Err(anyhow!("Repo check failed: {} - {}", status, text))
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn tauri_template_renders_installer_jobs() {
+        let s = WorkflowTemplate::tauri_template("test");
+        assert!(s.contains("build-ubuntu"));
+        assert!(s.contains("build-windows"));
+        assert!(s.contains("build-macos"));
+        assert!(s.contains("fromJson"));
+        assert!(s.contains("node-version: 22"));
+        assert!(s.contains("basename {}"));
+        assert!(s.contains("-name '*.deb'"));
+        assert!(s.contains("-name '*.dmg'"));
+        assert!(s.contains("sort -u"));
+        assert!(!s.contains("{{{{"));
+        assert!(!s.contains("}}}}"));
     }
 }

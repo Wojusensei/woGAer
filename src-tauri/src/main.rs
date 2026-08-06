@@ -564,7 +564,11 @@ async fn generate_workflow(
     let workflow_dir = path.join(".github").join("workflows");
     fs::create_dir_all(&workflow_dir).map_err(|e| e.to_string())?;
 
-    let content = actions::workflow::WorkflowTemplate::generate(&language, &project_name);
+    let content = if path.join("src-tauri").is_dir() {
+        actions::workflow::WorkflowTemplate::tauri_template(&project_name)
+    } else {
+        actions::workflow::WorkflowTemplate::generate(&language, &project_name)
+    };
     let file_path = workflow_dir.join("build.yml");
     fs::write(&file_path, content).map_err(|e| e.to_string())?;
 
