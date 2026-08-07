@@ -581,11 +581,19 @@ npm install
 - 项目依赖 OpenSSL、libssl-dev、cmake 等系统级库，但 GA 的 Ubuntu runner 上并没有没预装
 - woGAer 会在生成的 workflow 模板里预设常见依赖的安装步骤（apt-get install），但**不能**覆盖所有情况。
 
-#### 15.5网络问题
+#### 15.5 网络问题
 - 依赖下载超时（crates.io、npm registry、PyPI 在某些地区被墙或慢）
 - woGAer 不能解决此问题。Github Actions 的 runner 网络由 GitHub 控制。
+
+#### 15.6. GitHub Token 权限不足
+- 用户填入的 Token 没有 workflow 权限的勾选
+- 需要打包的项目关联私有仓库，但 Token 没有 repo 权限
+- woGAer 会在登录时验证 Token 是否有 workflow 权限，权限不足会给予用户提示
+- 需自查是否为私有仓库
 
 
 ## 📃 开源协议
 
-MIT License。正式声明前请补充仓库根目录的 `LICENSE` 文件。
+- **MIT License**
+
+- 正式声明前请补充仓库根目录的 `LICENSE` 文件
