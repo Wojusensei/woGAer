@@ -5,7 +5,7 @@
 ![使用图例](使用图例.png)
 
 
-为保障高性能的后端以及舒适的前端，项目基于 Rust + Tauri v2 + Vite 构建，没有框架包袱。Git 操作统一走系统 git 命令，所有构建任务在后台**异步执行**。打包产物会在工具内部一一列举，可仅下载有需要的，避免浪费时间和空间。**依旧地**，采用液态玻璃 UI 界面。
+为保障高性能的后端以及舒适的前端，项目基于 Rust + Tauri v2 + Vite 构建，没有框架包袱。Git 操作统一走系统 git 命令，所有构建任务在后台**异步执行**。打包产物会在工具内部一一列举，可仅下载有需要的构建产物，避免浪费时间和空间。**依旧地**，采用液态玻璃 UI 界面。
 
 
 
@@ -118,6 +118,7 @@ POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches
 - `403`：Token 权限不足，需要 `workflow` 权限
 - `422`：分支或 inputs 参数无效
 - `超时`：提示检查网络
+
 
 ### 状态轮询
 在前端使用了 `setInterval` 定时调用 `get_build_status`，Rust 侧则在独立线程中请求 GitHub API，避免阻塞 Tauri 事件循环。构建进入 `completed` 或 `failed` 后立即停止轮询，并更新进度条为对应提示颜色，给予用户正确的反馈。
@@ -555,6 +556,22 @@ npm install
 
 综上所述，不会。woGAer 只会在项目目录中创建 `.github/workflows/build.yml`，并通过 GitHub Contents API 写入远程仓库。它不会执行 `git add`、`git commit`、`git push`，也不会修改你的源码、分支或提交历史。
 
+### 15. ask:我的构建失败了！
+
+这种情况是会发生的，以下几种情况与 woGAer 本身无关：
+
+#### 15.1 项目本身编译不过
+- Rust 项目 cargo build 失败（语法错误、依赖冲突、缺少 target）
+- Node 项目 npm ci 失败（package-lock.json 损坏、私有依赖没权限）
+- Python 项目 pip install 失败（requirements.txt 里写了不存在的包）
+- ...
+- woGAer 会在检测到失败后在 UI 显示错误日志，告诉用户「构建失败，请检查项目代码」。
+
+#### 15.2 缺少构建产物
+- 用户 build.rs 或 build.sh 没生成正确的产物文件
+- 产物路径写错了，GA 打包时找不到东西
+- ...
+- woGAer 会在生成 workflow 时自动匹配主流框架的默认产物路径（target/release/、dist/、build/），但用户如果改了路径，还是会失败
 
 
 ## 📃 开源协议
