@@ -573,6 +573,18 @@ npm install
 - ...
 - woGAer 会在生成 workflow 时自动匹配主流框架的默认产物路径（target/release/、dist/、build/），但用户如果改了路径，还是会失败
 
+#### 15.3 测试用例失败
+- 很多项目在 CI 流程里会先跑测试，测试不过就中断构建
+- 此乃用户项目问题， woGAer 无能为力
+
+#### 15.4 缺少系统依赖
+- 项目依赖 OpenSSL、libssl-dev、cmake 等系统级库，但 GA 的 Ubuntu runner 上并没有没预装
+- woGAer 会在生成的 workflow 模板里预设常见依赖的安装步骤（apt-get install），但**不能**覆盖所有情况。
+
+#### 15.5网络问题
+- 依赖下载超时（crates.io、npm registry、PyPI 在某些地区被墙或慢）
+- woGAer 不能解决此问题。Github Actions 的 runner 网络由 GitHub 控制。
+
 
 ## 📃 开源协议
 
